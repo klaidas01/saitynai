@@ -20,7 +20,6 @@ namespace LibraryAPI.Repositories
         public async Task<List<Book>> GetAllBooks()
         {
             var books = await _context.Books
-                .Include(b => b.Library)
                 .ToListAsync();
 
             return books;

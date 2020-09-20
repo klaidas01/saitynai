@@ -62,9 +62,16 @@ namespace LibraryAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Book>> PostBook(BookDTO book)
         {
-            var bookId = await _bookService.PostBook(book);
+            try
+            {
+                var bookId = await _bookService.PostBook(book);
 
-            return CreatedAtAction("GetLibrary", new { id = bookId }, book);
+                return CreatedAtAction("GetBook", new { id = bookId }, book);
+            }
+            catch (DbUpdateException)
+            {
+                return NotFound();
+            }
         }
 
         // DELETE: api/Books/5

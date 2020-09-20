@@ -23,7 +23,6 @@ namespace LibraryAPI.DTO
         [Required]
         public string Description { get; set; }
 
-        [Required]
         public bool IsReserved { get; set; }
 
         [Required]

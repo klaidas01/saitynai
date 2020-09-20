@@ -215,6 +215,9 @@ D:\Universitetas\saitynai\LibraryAPI\bin\Debug\netcoreapp3.1\Microsoft.OpenApi.d
 D:\Universitetas\saitynai\LibraryAPI\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.Swagger.dll
 D:\Universitetas\saitynai\LibraryAPI\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.SwaggerGen.dll
 D:\Universitetas\saitynai\LibraryAPI\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.SwaggerUI.dll
+D:\Universitetas\saitynai\LibraryAPI\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.JsonPatch.dll
+D:\Universitetas\saitynai\LibraryAPI\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+D:\Universitetas\saitynai\LibraryAPI\bin\Debug\netcoreapp3.1\Newtonsoft.Json.Bson.dll
 D:\Universitetas\saitynai\LibraryAPI\obj\Debug\netcoreapp3.1\LibraryAPI.csproj.CoreCompileInputs.cache
 D:\Universitetas\saitynai\LibraryAPI\obj\Debug\netcoreapp3.1\LibraryAPI.MvcApplicationPartsAssemblyInfo.cs
 D:\Universitetas\saitynai\LibraryAPI\obj\Debug\netcoreapp3.1\LibraryAPI.MvcApplicationPartsAssemblyInfo.cache
