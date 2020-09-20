@@ -2,7 +2,6 @@
 using LibraryAPI.Models;
 using LibraryAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +22,7 @@ namespace LibraryAPI.Repositories
             var libraries = await _context.Libraries
                 .Include(l => l.Books)
                 .ToListAsync();
+
             return libraries;
         }
 
@@ -30,7 +30,8 @@ namespace LibraryAPI.Repositories
         {
             var library = await _context.Libraries
                 .Include(l => l.Books)
-                .FirstOrDefaultAsync<Library>();
+                .Where(l => l.Id == id)
+                .FirstOrDefaultAsync();
 
             return library;
         }

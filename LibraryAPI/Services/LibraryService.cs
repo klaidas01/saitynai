@@ -2,9 +2,7 @@
 using LibraryAPI.Models;
 using LibraryAPI.Repositories.Interfaces;
 using LibraryAPI.Services.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace LibraryAPI.Services
@@ -38,6 +36,7 @@ namespace LibraryAPI.Services
 
         public async Task<Library> DeleteLibrary(int id)
         {
+
             var library = await _repo.GetLibrary(id);
             await _repo.DeleteLibrary(library);
             return library;

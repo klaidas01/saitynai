@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Universitetas\\Saitynas\\LibraryAPI\\LibraryAPI.csproj": {}
+    "D:\\Universitetas\\saitynai\\LibraryAPI\\LibraryAPI.csproj": {}
   },
   "projects": {
-    "D:\\Universitetas\\Saitynas\\LibraryAPI\\LibraryAPI.csproj": {
+    "D:\\Universitetas\\saitynai\\LibraryAPI\\LibraryAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Universitetas\\Saitynas\\LibraryAPI\\LibraryAPI.csproj",
+        "projectUniqueName": "D:\\Universitetas\\saitynai\\LibraryAPI\\LibraryAPI.csproj",
         "projectName": "LibraryAPI",
-        "projectPath": "D:\\Universitetas\\Saitynas\\LibraryAPI\\LibraryAPI.csproj",
+        "projectPath": "D:\\Universitetas\\saitynai\\LibraryAPI\\LibraryAPI.csproj",
         "packagesPath": "C:\\Users\\klaid\\.nuget\\packages\\",
-        "outputPath": "D:\\Universitetas\\Saitynas\\LibraryAPI\\obj\\",
+        "outputPath": "D:\\Universitetas\\saitynai\\LibraryAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\klaid\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -46,6 +46,10 @@
               "target": "Package",
               "version": "[3.1.8, )"
             },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[3.1.8, )"
+            },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -55,6 +59,14 @@
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
               "version": "[1.10.9, )"
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[3.1.4, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[5.6.1, )"
             }
           },
           "imports": [
