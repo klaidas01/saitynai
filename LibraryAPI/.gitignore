@@ -441,3 +441,4 @@ $RECYCLE.BIN/
 
 Dockerfile
 .dockerignore
+docker-compose.yml

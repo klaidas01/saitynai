@@ -20,7 +20,12 @@ namespace LibraryAPI
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    var port = Environment.GetEnvironmentVariable("PORT");
+                    if (port != null)
+                    {
+                        webBuilder.UseStartup<Startup>().UseUrls("http://*:" + port);
+                    }
+                    else webBuilder.UseStartup<Startup>();
                 });
     }
 }

@@ -13,7 +13,7 @@ namespace LibraryAPI.Models
         public double Rating { get; set; }
         public int PageCount { get; set; }
         public string Description { get; set; }
-        public bool IsReserved { get; set; }
+        public Boolean IsReserved { get; set; }
 
         public int LibraryId { get; set; }
         public Library Library { get; set; }

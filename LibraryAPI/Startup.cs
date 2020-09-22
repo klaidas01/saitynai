@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LibraryAPI.Context;
+using LibraryAPI.Models;
 using LibraryAPI.Repositories;
 using LibraryAPI.Repositories.Interfaces;
 using LibraryAPI.Services;
@@ -16,6 +17,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore;
+using Npgsql;
 
 namespace LibraryAPI
 {
@@ -33,8 +36,27 @@ namespace LibraryAPI
         {
             services.AddControllers();
 
+            string connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+            if (connectionString != null)
+            {
+                var databaseUri = new Uri(connectionString);
+                var userInfo = databaseUri.UserInfo.Split(':');
+
+                var builder = new NpgsqlConnectionStringBuilder
+                {
+                    Host = databaseUri.Host,
+                    Port = databaseUri.Port,
+                    Username = userInfo[0],
+                    Password = userInfo[1],
+                    Database = databaseUri.LocalPath.TrimStart('/')
+                };
+
+                connectionString = builder.ToString();
+            }
+            else connectionString = Configuration.GetConnectionString("DefaultConnection");
+
             services.AddDbContext<LibraryContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(connectionString));
 
             services.AddScoped<ILibraryService, LibraryService>();
             services.AddScoped<ILibraryRepository, LibraryRepository>();
@@ -78,6 +100,8 @@ namespace LibraryAPI
             {
                 endpoints.MapControllers();
             });
+
+            PrepDB.prep(app);
         }
     }
 }
