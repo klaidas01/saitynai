@@ -26,6 +26,26 @@ namespace LibraryAPI.Repositories
             return reservations;
         }
 
+        public async Task<List<Reservation>> GetUserReservations(string uid)
+        {
+            var reservations = await _context.Reservations
+                .Include(r => r.Book)
+                .Where(r => r.UserId == uid)
+                .ToListAsync();
+
+            return reservations;
+        }
+
+        public async Task<List<Reservation>> GetLibraryReservations(int? libraryId)
+        {
+            var reservations = await _context.Reservations
+                .Include(r => r.Book)
+                .Where(r => r.Book.LibraryId == libraryId)
+                .ToListAsync();
+
+            return reservations;
+        }
+
         public async Task<Reservation> GetReservation(int id)
         {
             var reservation = await _context.Reservations

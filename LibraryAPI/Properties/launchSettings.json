@@ -13,6 +13,8 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
+        "JWT_KEY": "K56YTR41J56WT1HGWREJ4T6RWJ4N15WH",
+        "ADMIN_PWD": "123",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },

@@ -6,14 +6,11 @@ using System.Threading.Tasks;
 
 namespace LibraryAPI.DTO
 {
-    public class LibraryDTO
+    public class EmployeeRoleDTO
     {
         [Required]
-        public string Name { get; set; }
-
+        public string UserName { get; set; }
         [Required]
-        public string Address { get; set; }
-
-
+        public int LibraryId { get; set; }
     }
 }

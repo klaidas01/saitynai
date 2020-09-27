@@ -16,5 +16,8 @@ namespace LibraryAPI.Models
         public DateTime StartDate { get; set; }
         public DateTime ReturnDate { get; set; }
         public bool IsReturned { get; set; }
+
+        public string UserId { get; set; }
+        public ApplicationUser User { get; set; }
     }
 }

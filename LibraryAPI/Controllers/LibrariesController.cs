@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using LibraryAPI.Models;
 using LibraryAPI.Services.Interfaces;
 using LibraryAPI.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibraryAPI.Controllers
 {
@@ -45,6 +46,7 @@ namespace LibraryAPI.Controllers
 
         // PUT: api/Libraries/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> PutLibrary(int id, LibraryDTO library)
         {
             try
@@ -60,6 +62,7 @@ namespace LibraryAPI.Controllers
 
         // POST: api/Libraries
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult<Library>> PostLibrary(LibraryDTO library)
         {
             var libraryId = await _libraryService.PostLibrary(library);
@@ -69,6 +72,7 @@ namespace LibraryAPI.Controllers
 
         // DELETE: api/Libraries/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult<Library>> DeleteLibrary(int id)
         {
             try

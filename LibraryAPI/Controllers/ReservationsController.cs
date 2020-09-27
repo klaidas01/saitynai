@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using LibraryAPI.Models;
 using LibraryAPI.Services.Interfaces;
 using LibraryAPI.DTO;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace LibraryAPI.Controllers
 {
@@ -23,48 +25,71 @@ namespace LibraryAPI.Controllers
 
         // GET: api/Reservations
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Reservation>>> GetReservations()
         {
-            var reservations = await _reservationService.GetReservations();
+            var role = this.User.FindFirst(ClaimTypes.Role).Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var reservations = await _reservationService.GetReservations(userId, role);
             return Ok(reservations);
         }
 
         // GET: api/Reservations/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Reservation>> GetReservation(int id)
         {
-            var reservation = await _reservationService.GetReservation(id);
-
-            if (reservation == null)
+            var role = this.User.FindFirst(ClaimTypes.Role).Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            try
             {
-                return NotFound();
-            }
+                var reservation = await _reservationService.GetReservation(id, userId, role);
 
-            return Ok(reservation);
+                if (reservation == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(reservation);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
         }
 
         // PUT: api/Reservations/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator,Employee")]
         public async Task<IActionResult> PutReservation(int id, ReservationDTO reservation)
         {
+            var role = this.User.FindFirst(ClaimTypes.Role).Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             try
             {
-                await _reservationService.UpdateReservation(id, reservation);
+                await _reservationService.UpdateReservation(id, reservation, userId, role);
                 return NoContent();
             }
             catch (DbUpdateConcurrencyException)
             {
                 return NotFound();
             }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
         }
 
         // POST: api/Reservations
         [HttpPost]
+        [Authorize(Roles = "Administrator,Employee")]
         public async Task<ActionResult<Reservation>> PostReservation(ReservationDTO reservation)
         {
+            var role = this.User.FindFirst(ClaimTypes.Role).Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             try
             {
-                var reservationId = await _reservationService.PostReservation(reservation);
+                var reservationId = await _reservationService.PostReservation(reservation, userId, role);
 
                 return CreatedAtAction("GetReservation", new { id = reservationId }, reservation);
             }
@@ -72,20 +97,31 @@ namespace LibraryAPI.Controllers
             {
                 return NotFound();
             }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
         }
 
         // DELETE: api/Reservations/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator,Employee")]
         public async Task<ActionResult<Reservation>> DeleteReservation(int id)
         {
+            var role = this.User.FindFirst(ClaimTypes.Role).Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             try
             {
-                var reservation = await _reservationService.DeleteReservation(id);
+                var reservation = await _reservationService.DeleteReservation(id, userId, role);
                 return Ok(reservation);
             }
             catch (ArgumentNullException)
             {
                 return NotFound();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
             }
         }
     }
