@@ -5,6 +5,7 @@ using LibraryAPI.Repositories.Interfaces;
 using LibraryAPI.Services.Interfaces;
 using LibraryAPI.Settings;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -29,6 +30,15 @@ namespace LibraryAPI.Services
             _roleManager = roleManager;
             _jwt = jwt.Value;
             _libraryRepo = libraryRepo;
+        }
+
+        public async Task<List<UserDTO>> getUsers()
+        {
+            var users = await _userManager
+                .Users
+                .Select(u => new UserDTO { UserName = u.UserName, FirstName = u.FirstName, LastName = u.LastName, Email = u.Email, Id = u.Id})
+                .ToListAsync();
+            return users;
         }
 
         public async Task<string> Register(RegisterDTO model)

@@ -9,6 +9,7 @@ namespace LibraryAPI.Services.Interfaces
 {
     public interface IUserService
     {
+        public Task<List<UserDTO>> getUsers();
         Task<string> Register(RegisterDTO model);
         Task<TokenResponse> GetTokenAsync(TokenDTO model);
         Task<string> PromoteToAdmin(string username);

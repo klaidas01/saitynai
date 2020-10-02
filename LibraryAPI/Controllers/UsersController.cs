@@ -20,6 +20,14 @@ namespace LibraryAPI.Controllers
             _userService = userService;
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Administrator,Employee")]
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
+        {
+            var books = await _userService.getUsers();
+            return Ok(books);
+        }
+
         [HttpPost("register")]
         public async Task<ActionResult> Register(RegisterDTO model)
         {

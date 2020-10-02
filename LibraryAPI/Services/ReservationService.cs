@@ -69,7 +69,10 @@ namespace LibraryAPI.Services
             }
             var id = await _repo.PostReservation(new Reservation { 
                 BookId = reservation.BookId,
-                StartDate = reservation.StartDate
+                UserId = reservation.UserId,
+                StartDate = reservation.StartDate,
+                ReturnDate = reservation.ReturnDate,
+                IsReturned = false
             });
             return id;
         }
@@ -100,6 +103,7 @@ namespace LibraryAPI.Services
             await _repo.UpdateReservation(new Reservation
             {
                 BookId = reservation.BookId,
+                UserId = reservation.UserId,
                 StartDate = reservation.StartDate,
                 ReturnDate = reservation.ReturnDate,
                 IsReturned = reservation.IsReturned
