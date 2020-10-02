@@ -29,8 +29,8 @@ namespace LibraryAPI.Controllers
         public async Task<ActionResult<IEnumerable<Reservation>>> GetReservations()
         {
             var role = this.User.FindFirst(ClaimTypes.Role).Value;
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var reservations = await _reservationService.GetReservations(userId, role);
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var reservations = await _reservationService.GetReservations(userName, role);
             return Ok(reservations);
         }
 
@@ -40,10 +40,10 @@ namespace LibraryAPI.Controllers
         public async Task<ActionResult<Reservation>> GetReservation(int id)
         {
             var role = this.User.FindFirst(ClaimTypes.Role).Value;
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
             try
             {
-                var reservation = await _reservationService.GetReservation(id, userId, role);
+                var reservation = await _reservationService.GetReservation(id, userName, role);
 
                 if (reservation == null)
                 {
@@ -64,10 +64,10 @@ namespace LibraryAPI.Controllers
         public async Task<IActionResult> PutReservation(int id, ReservationDTO reservation)
         {
             var role = this.User.FindFirst(ClaimTypes.Role).Value;
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
             try
             {
-                await _reservationService.UpdateReservation(id, reservation, userId, role);
+                await _reservationService.UpdateReservation(id, reservation, userName, role);
                 return NoContent();
             }
             catch (DbUpdateConcurrencyException)
@@ -86,10 +86,10 @@ namespace LibraryAPI.Controllers
         public async Task<ActionResult<Reservation>> PostReservation(ReservationDTO reservation)
         {
             var role = this.User.FindFirst(ClaimTypes.Role).Value;
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
             try
             {
-                var reservationId = await _reservationService.PostReservation(reservation, userId, role);
+                var reservationId = await _reservationService.PostReservation(reservation, userName, role);
 
                 return CreatedAtAction("GetReservation", new { id = reservationId }, reservation);
             }
@@ -109,10 +109,10 @@ namespace LibraryAPI.Controllers
         public async Task<ActionResult<Reservation>> DeleteReservation(int id)
         {
             var role = this.User.FindFirst(ClaimTypes.Role).Value;
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
             try
             {
-                var reservation = await _reservationService.DeleteReservation(id, userId, role);
+                var reservation = await _reservationService.DeleteReservation(id, userName, role);
                 return Ok(reservation);
             }
             catch (ArgumentNullException)

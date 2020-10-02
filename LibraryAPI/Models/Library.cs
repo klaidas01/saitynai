@@ -12,7 +12,5 @@ namespace LibraryAPI.Models
 
         [Required]
         public string Address { get; set; }
-
-        public IList<Book> Books { get; set; }
     }
 }

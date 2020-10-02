@@ -22,7 +22,7 @@ namespace LibraryAPI.Context
                 .HasKey(b => b.Id);
             modelBuilder.Entity<Book>()
                 .HasOne(b => b.Library)
-                .WithMany(l => l.Books)
+                .WithMany()
                 .HasForeignKey(b => b.LibraryId);
 
             modelBuilder.Entity<Reservation>()

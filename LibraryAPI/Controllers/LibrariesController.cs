@@ -16,10 +16,12 @@ namespace LibraryAPI.Controllers
     public class LibrariesController : ControllerBase
     {
         private readonly ILibraryService _libraryService;
+        private readonly IBookService _bookService;
 
-        public LibrariesController(ILibraryService libraryService)
+        public LibrariesController(ILibraryService libraryService, IBookService bookService)
         {
             _libraryService = libraryService;
+            _bookService = bookService;
         }
 
         // GET: api/Libraries
@@ -28,6 +30,31 @@ namespace LibraryAPI.Controllers
         {
             var libraries = await _libraryService.GetLibraries();
             return Ok(libraries);
+        }
+
+        // GET: api/Libraries/1/books
+        [HttpGet("{libraryId}/books")]
+        public async Task<ActionResult<Library>> GetLibraryBooks([FromRoute] int libraryId)
+        {
+            var books = await _bookService.GetLibraryBooks(libraryId);
+            return Ok(books);
+        }
+
+        // GET: api/Libraries/1/books/1
+        [HttpGet("{libraryId}/books/{bookId}")]
+        public async Task<ActionResult<Library>> GetLibraryBook([FromRoute] int libraryId, [FromRoute] int bookId)
+        {
+            var book = await _bookService.GetBook(bookId);
+            if (book == null)
+            {
+                return NotFound();
+            }
+            if(libraryId != book.LibraryId)
+            {
+                return BadRequest();
+            }
+
+            return Ok(book);
         }
 
         // GET: api/Libraries/5

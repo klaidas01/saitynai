@@ -7,6 +7,7 @@ namespace LibraryAPI.Repositories.Interfaces
     public interface IBookRepository
     {
         public Task<List<Book>> GetAllBooks();
+        public Task<List<Book>> GetLibraryBooks(int libraryId);
         public Task<Book> GetBook(int id);
         public Task DeleteBook(Book book);
         public Task UpdateBook(Book book);

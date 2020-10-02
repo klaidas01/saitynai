@@ -20,7 +20,6 @@ namespace LibraryAPI.Repositories
         public async Task<List<Library>> GetAllLibraries()
         {
             var libraries = await _context.Libraries
-                .Include(l => l.Books)
                 .ToListAsync();
 
             return libraries;
@@ -29,7 +28,6 @@ namespace LibraryAPI.Repositories
         public async Task<Library> GetLibrary(int id)
         {
             var library = await _context.Libraries
-                .Include(l => l.Books)
                 .Where(l => l.Id == id)
                 .FirstOrDefaultAsync();
 

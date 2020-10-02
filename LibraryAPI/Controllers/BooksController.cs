@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using LibraryAPI.Models;
 using LibraryAPI.Services.Interfaces;
 using LibraryAPI.DTO;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace LibraryAPI.Controllers
 {
@@ -45,26 +47,36 @@ namespace LibraryAPI.Controllers
 
         // PUT: api/Books/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator,Employee")]
         public async Task<IActionResult> PutBook(int id, BookDTO book)
         {
+            var role = this.User.FindFirst(ClaimTypes.Role).Value;
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
             try
             {
-                await _bookService.UpdateBook(id, book);
+                await _bookService.UpdateBook(id, book, userName, role);
                 return NoContent();
             }
             catch (DbUpdateConcurrencyException)
             {
                 return NotFound();
             }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
         }
 
         // POST: api/Books
         [HttpPost]
+        [Authorize(Roles = "Administrator,Employee")]
         public async Task<ActionResult<Book>> PostBook(BookDTO book)
         {
+            var role = this.User.FindFirst(ClaimTypes.Role).Value;
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
             try
             {
-                var bookId = await _bookService.PostBook(book);
+                var bookId = await _bookService.PostBook(book, userName, role);
 
                 return CreatedAtAction("GetBook", new { id = bookId }, book);
             }
@@ -72,20 +84,31 @@ namespace LibraryAPI.Controllers
             {
                 return NotFound();
             }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
         }
 
         // DELETE: api/Books/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator,Employee")]
         public async Task<ActionResult<Book>> DeleteBook(int id)
         {
+            var role = this.User.FindFirst(ClaimTypes.Role).Value;
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
             try
             {
-                var book = await _bookService.DeleteBook(id);
+                var book = await _bookService.DeleteBook(id, userName, role);
                 return Ok(book);
             }
             catch (ArgumentNullException)
             {
                 return NotFound();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
             }
         }
     }

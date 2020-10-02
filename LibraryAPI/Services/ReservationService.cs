@@ -22,16 +22,17 @@ namespace LibraryAPI.Services
             _bookRepo = bookRepo;
         }
 
-        public async Task<List<Reservation>> GetReservations(string userId, string role)
+        public async Task<List<Reservation>> GetReservations(string userName, string role)
         {
             if (role == "User")
             {
-                var userReservations = await _repo.GetUserReservations(userId);
+                var user = await _userManager.FindByNameAsync(userName);
+                var userReservations = await _repo.GetUserReservations(user.UserName);
                 return userReservations;
             }
             if (role == "Employee")
             {
-                var user = await _userManager.FindByIdAsync(userId);
+                var user = await _userManager.FindByNameAsync(userName);
                 var libraryReservations = await _repo.GetLibraryReservations(user.LibraryId);
                 return libraryReservations;
             }
@@ -39,28 +40,29 @@ namespace LibraryAPI.Services
             return reservations;
         }
 
-        public async Task<Reservation> GetReservation(int id, string userId, string role)
+        public async Task<Reservation> GetReservation(int id, string userName, string role)
         {
             var reservation = await _repo.GetReservation(id);
             if (role == "User")
             {
-                if (reservation.UserId == userId) return reservation;
+                var user = await _userManager.FindByNameAsync(userName);
+                if (reservation.UserId == user.UserName) return reservation;
                 else throw new UnauthorizedAccessException();
             }
             if (role == "Employee")
             {
-                var user = await _userManager.FindByIdAsync(userId);
+                var user = await _userManager.FindByNameAsync(userName);
                 if (reservation.Book.LibraryId == user.LibraryId) return reservation;
                 else throw new UnauthorizedAccessException();
             }
             return reservation;
         }
 
-        public async Task<int> PostReservation(ReservationDTO reservation, string userId, string role)
+        public async Task<int> PostReservation(ReservationDTO reservation, string userName, string role)
         {
             if (role == "Employee")
             {
-                var user = await _userManager.FindByIdAsync(userId);
+                var user = await _userManager.FindByNameAsync(userName);
                 var book = await _bookRepo.GetBook(reservation.BookId);
                 if (book.LibraryId != user.LibraryId)
                     throw new UnauthorizedAccessException();
@@ -72,12 +74,12 @@ namespace LibraryAPI.Services
             return id;
         }
 
-        public async Task<Reservation> DeleteReservation(int id, string userId, string role)
+        public async Task<Reservation> DeleteReservation(int id, string userName, string role)
         {
             var reservation = await _repo.GetReservation(id);
             if (role == "Employee")
             {
-                var user = await _userManager.FindByIdAsync(userId);
+                var user = await _userManager.FindByNameAsync(userName);
                 var book = await _bookRepo.GetBook(reservation.BookId);
                 if (book.LibraryId != user.LibraryId)
                     throw new UnauthorizedAccessException();
@@ -86,11 +88,11 @@ namespace LibraryAPI.Services
             return reservation;
         }
 
-        public async Task<int> UpdateReservation(int id, ReservationDTO reservation, string userId, string role)
+        public async Task<int> UpdateReservation(int id, ReservationDTO reservation, string userName, string role)
         {
             if (role == "Employee")
             {
-                var user = await _userManager.FindByIdAsync(userId);
+                var user = await _userManager.FindByNameAsync(userName);
                 var book = await _bookRepo.GetBook(reservation.BookId);
                 if (book.LibraryId != user.LibraryId)
                     throw new UnauthorizedAccessException();
