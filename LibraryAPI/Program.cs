@@ -6,6 +6,7 @@ using LibraryAPI.Context;
 using LibraryAPI.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,6 +28,8 @@ namespace LibraryAPI
                 {
                     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                    var context = services.GetRequiredService<LibraryContext>();
+                    context.Database.Migrate();
                     await SeedDatabase.SeedEssentialsAsync(userManager, roleManager);
                 }
                 catch (Exception ex)

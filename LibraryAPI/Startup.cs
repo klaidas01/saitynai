@@ -144,8 +144,6 @@ namespace LibraryAPI
             {
                 endpoints.MapControllers();
             });
-
-            PrepDB.prep(app);
         }
     }
 }
