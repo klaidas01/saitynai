@@ -9,6 +9,7 @@ using LibraryAPI.Services.Interfaces;
 using LibraryAPI.DTO;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace LibraryAPI.Controllers
 {
@@ -34,7 +35,7 @@ namespace LibraryAPI.Controllers
             return Ok(reservations);
         }
 
-        // GET: api/Reservations/5
+        // GET: api/Reservation/5
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<Reservation>> GetReservation(int id)
@@ -54,7 +55,7 @@ namespace LibraryAPI.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
         }
 
@@ -70,13 +71,17 @@ namespace LibraryAPI.Controllers
                 await _reservationService.UpdateReservation(id, reservation, userName, role);
                 return NoContent();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateException)
+            {
+                return BadRequest();
+            }
+            catch (KeyNotFoundException)
             {
                 return NotFound();
             }
             catch (UnauthorizedAccessException)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
         }
 
@@ -95,11 +100,11 @@ namespace LibraryAPI.Controllers
             }
             catch (DbUpdateException)
             {
-                return NotFound();
+                return BadRequest();
             }
             catch (UnauthorizedAccessException)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
         }
 
@@ -121,7 +126,7 @@ namespace LibraryAPI.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
         }
     }

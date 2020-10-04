@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using LibraryAPI.DTO;
 using LibraryAPI.Services.Interfaces;
@@ -28,11 +29,30 @@ namespace LibraryAPI.Controllers
             return Ok(books);
         }
 
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Administrator,Employee")]
+        public async Task<ActionResult<UserDTO>> GetUser(string id)
+        {
+            var user = await _userService.getUser(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
+
         [HttpPost("register")]
         public async Task<ActionResult> Register(RegisterDTO model)
         {
             var result = await _userService.Register(model);
-            return Ok(result);
+            if (result == "Conflict")
+                return Conflict("Username or email already in use");
+            if (result == "Failure")
+                return StatusCode(500);
+            var user = await _userService.getUser(result);
+            return CreatedAtAction("GetUser", new { id = result }, user);
         }
 
         [HttpPost("token")]
@@ -42,7 +62,7 @@ namespace LibraryAPI.Controllers
             return Ok(result);
         }
 
-        [HttpPut("admin")]
+        [HttpPatch("admin")]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> PromoteToAdmin(AdminRoleDTO model)
         {
@@ -50,7 +70,7 @@ namespace LibraryAPI.Controllers
             return Ok(result);
         }
 
-        [HttpPut("employee")]
+        [HttpPatch("employee")]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> PromoteToEmployee(EmployeeRoleDTO model)
         {

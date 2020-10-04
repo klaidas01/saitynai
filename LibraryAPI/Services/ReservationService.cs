@@ -3,6 +3,7 @@ using LibraryAPI.Models;
 using LibraryAPI.Repositories.Interfaces;
 using LibraryAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace LibraryAPI.Services
             if (role == "User")
             {
                 var user = await _userManager.FindByNameAsync(userName);
-                var userReservations = await _repo.GetUserReservations(user.UserName);
+                var userReservations = await _repo.GetUserReservations(user.Id);
                 return userReservations;
             }
             if (role == "Employee")
@@ -43,10 +44,11 @@ namespace LibraryAPI.Services
         public async Task<Reservation> GetReservation(int id, string userName, string role)
         {
             var reservation = await _repo.GetReservation(id);
+            if (reservation == null) return reservation;
             if (role == "User")
             {
                 var user = await _userManager.FindByNameAsync(userName);
-                if (reservation.UserId == user.UserName) return reservation;
+                if (reservation.UserId == user.Id) return reservation;
                 else throw new UnauthorizedAccessException();
             }
             if (role == "Employee")
@@ -63,15 +65,16 @@ namespace LibraryAPI.Services
             if (role == "Employee")
             {
                 var user = await _userManager.FindByNameAsync(userName);
-                var book = await _bookRepo.GetBook(reservation.BookId);
+                var book = await _bookRepo.GetBook((int)reservation.BookId);
+                if (user == null || book == null) throw new DbUpdateException();
                 if (book.LibraryId != user.LibraryId)
                     throw new UnauthorizedAccessException();
             }
             var id = await _repo.PostReservation(new Reservation { 
-                BookId = reservation.BookId,
+                BookId = (int)reservation.BookId,
                 UserId = reservation.UserId,
-                StartDate = reservation.StartDate,
-                ReturnDate = reservation.ReturnDate,
+                StartDate = (DateTime)reservation.StartDate,
+                ReturnDate = (DateTime)reservation.ReturnDate,
                 IsReturned = false
             });
             return id;
@@ -93,19 +96,23 @@ namespace LibraryAPI.Services
 
         public async Task<int> UpdateReservation(int id, ReservationDTO reservation, string userName, string role)
         {
+            var oldReservation = await _repo.GetUntrackedReservation(id);
+            if (oldReservation == null) throw new KeyNotFoundException();
             if (role == "Employee")
             {
                 var user = await _userManager.FindByNameAsync(userName);
-                var book = await _bookRepo.GetBook(reservation.BookId);
-                if (book.LibraryId != user.LibraryId)
+                var book = await _bookRepo.GetBook((int)reservation.BookId);
+                var oldBook = await _bookRepo.GetBook((int)oldReservation.BookId);
+                if (book.LibraryId != user.LibraryId || book.LibraryId != oldBook.LibraryId)
                     throw new UnauthorizedAccessException();
             }
             await _repo.UpdateReservation(new Reservation
             {
-                BookId = reservation.BookId,
+                Id = id,
+                BookId = (int)reservation.BookId,
                 UserId = reservation.UserId,
-                StartDate = reservation.StartDate,
-                ReturnDate = reservation.ReturnDate,
+                StartDate = (DateTime)reservation.StartDate,
+                ReturnDate = (DateTime)reservation.ReturnDate,
                 IsReturned = reservation.IsReturned
             });
             return id;

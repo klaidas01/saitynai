@@ -15,10 +15,14 @@ namespace LibraryAPI.DTO
         public string Author { get; set; }
 
         [Required]
-        public double Rating { get; set; }
+        [Range(0.1, 10,
+        ErrorMessage = "Value for {0} must be between {1} and {2}.")]
+        public double? Rating { get; set; }
 
         [Required]
-        public int PageCount { get; set; }
+        [Range(1, Double.PositiveInfinity,
+        ErrorMessage = "Value for {0} must be more than 0")]
+        public int? PageCount { get; set; }
 
         [Required]
         public string Description { get; set; }

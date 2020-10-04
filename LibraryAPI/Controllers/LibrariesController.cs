@@ -36,6 +36,11 @@ namespace LibraryAPI.Controllers
         [HttpGet("{libraryId}/books")]
         public async Task<ActionResult<Library>> GetLibraryBooks([FromRoute] int libraryId)
         {
+            var library = await _libraryService.GetLibrary(libraryId);
+            if (library == null)
+            {
+                return NotFound();
+            }
             var books = await _bookService.GetLibraryBooks(libraryId);
             return Ok(books);
         }

@@ -8,6 +8,7 @@ namespace LibraryAPI.Repositories.Interfaces
     {
         public Task<List<Reservation>> GetAllReservations();
         public Task<Reservation> GetReservation(int id);
+        public Task<Reservation> GetUntrackedReservation(int id);
         public Task<List<Reservation>> GetUserReservations(string uid);
         public Task<List<Reservation>> GetLibraryReservations(int? libraryId);
         public Task DeleteReservation(Reservation reservation);

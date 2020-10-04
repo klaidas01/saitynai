@@ -57,13 +57,17 @@ namespace LibraryAPI.Controllers
                 await _bookService.UpdateBook(id, book, userName, role);
                 return NoContent();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateException)
+            {
+                return BadRequest($"There is no library with id {book.LibraryId}");
+            }
+            catch (KeyNotFoundException)
             {
                 return NotFound();
             }
             catch (UnauthorizedAccessException)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
         }
 
@@ -82,11 +86,11 @@ namespace LibraryAPI.Controllers
             }
             catch (DbUpdateException)
             {
-                return NotFound();
+                return BadRequest($"No library with id {book.LibraryId}");
             }
             catch (UnauthorizedAccessException)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
         }
 
@@ -108,7 +112,7 @@ namespace LibraryAPI.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return Unauthorized();
+                return StatusCode(403);
             }
         }
     }

@@ -50,8 +50,8 @@ namespace LibraryAPI.Services
             var id = await _repo.PostBook(new Book { 
                 Title = book.Title,
                 Author = book.Author,
-                Rating = book.Rating,
-                PageCount = book.PageCount,
+                Rating = (double)book.Rating,
+                PageCount = (int)book.PageCount,
                 Description = book.Description,
                 LibraryId = book.LibraryId,
                 IsReserved = false
@@ -74,19 +74,24 @@ namespace LibraryAPI.Services
 
         public async Task<int> UpdateBook(int id, BookDTO book, string userName, string role)
         {
+            var oldBook = await _repo.GetUntrackedBook(id);
+            if (oldBook == null)
+            {
+                throw new KeyNotFoundException();
+            }
             if (role == "Employee")
             {
                 var user = await _userManager.FindByNameAsync(userName);
-                var oldBook = await _repo.GetBook(id);
                 if (user.LibraryId != oldBook.LibraryId || user.LibraryId != book.LibraryId)
                     throw new UnauthorizedAccessException();
             }
             await _repo.UpdateBook(new Book
             {
+                Id = id,
                 Title = book.Title,
                 Author = book.Author,
-                Rating = book.Rating,
-                PageCount = book.PageCount,
+                Rating = (double)book.Rating,
+                PageCount = (int)book.PageCount,
                 Description = book.Description,
                 LibraryId = book.LibraryId,
                 IsReserved = book.IsReserved

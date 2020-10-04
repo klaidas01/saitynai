@@ -56,6 +56,17 @@ namespace LibraryAPI.Repositories
             return reservation;
         }
 
+        public async Task<Reservation> GetUntrackedReservation(int id)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.Book)
+                .Where(r => r.Id == id)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            return reservation;
+        }
+
         public async Task DeleteReservation(Reservation reservation)
         {
             _context.Reservations.Remove(reservation);

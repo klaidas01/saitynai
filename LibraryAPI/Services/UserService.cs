@@ -41,6 +41,16 @@ namespace LibraryAPI.Services
             return users;
         }
 
+        public async Task<List<UserDTO>> getUser(string id)
+        {
+            var user = await _userManager
+                .Users
+                .Where(u => u.Id == id)
+                .Select(u => new UserDTO { UserName = u.UserName, FirstName = u.FirstName, LastName = u.LastName, Email = u.Email, Id = u.Id })
+                .ToListAsync();
+            return user;
+        }
+
         public async Task<string> Register(RegisterDTO model)
         {
             var user = new ApplicationUser
@@ -58,17 +68,13 @@ namespace LibraryAPI.Services
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, Authorization.default_role.ToString());
-                    return $"User Registered with username {user.UserName}";
+                    return user.Id;
                 }
-                return $"{result}";
-            }
-            else if (userWithSameName == null)
-            {
-                return $"Email {user.Email} is already taken.";
+                return "Failure";
             }
             else
             {
-                return $"User name {user.UserName} is already taken.";
+                return "Conflict";
             }
         }
 

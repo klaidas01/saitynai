@@ -45,6 +45,17 @@ namespace LibraryAPI.Repositories
             return book;
         }
 
+        public async Task<Book> GetUntrackedBook(int id)
+        {
+            var book = await _context.Books
+                .Include(b => b.Library)
+                .Where(b => b.Id == id)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            return book;
+        }
+
         public async Task DeleteBook(Book book)
         {
             _context.Books.Remove(book);
