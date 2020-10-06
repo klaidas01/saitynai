@@ -8,6 +8,7 @@ using LibraryAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LibraryAPI.Controllers
 {
@@ -60,6 +61,27 @@ namespace LibraryAPI.Controllers
         {
             var result = await _userService.GetTokenAsync(model);
             return Ok(result);
+        }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> RefreshToken(RefreshTokenDTO model)
+        {
+            try
+            {
+                var result = await _userService.RefreshToken(model);
+                if (result == null) return BadRequest();
+                return Ok(result);
+            }
+            catch (SecurityTokenException)
+            {
+                return BadRequest();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+
+
         }
 
         [HttpPatch("admin")]

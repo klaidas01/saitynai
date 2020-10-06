@@ -13,6 +13,7 @@ namespace LibraryAPI.Services.Interfaces
         Task<List<UserDTO>> getUser(string id);
         Task<string> Register(RegisterDTO model);
         Task<TokenResponse> GetTokenAsync(TokenDTO model);
+        Task<TokenResponse> RefreshToken(RefreshTokenDTO model);
         Task<string> PromoteToAdmin(string username);
         Task<string> PromoteToEmployee(EmployeeRoleDTO model);
     }
