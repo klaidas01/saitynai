@@ -13,12 +13,12 @@ using Xunit;
 
 namespace LibraryAPITests.ControllerUnitTests
 {
-    public class BookControllerTest
+    public class BooksControllerTest
     {
         BooksController controller;
         IBookService service;
 
-        public BookControllerTest()
+        public BooksControllerTest()
         {
             service = new MockBookService();
             controller = new BooksController(service);
