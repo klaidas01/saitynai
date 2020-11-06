@@ -10,18 +10,23 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const CancelButton = ({onClick, text}) => {
+const CancelButton = ({ onClick, text }) => {
   const classes = useStyles();
   return (
-    <Button onClick={onClick} className={classes.button} variant="outlined">
+    <Button
+      data-testid="cancelButton"
+      onClick={onClick}
+      className={classes.button}
+      variant="outlined"
+    >
       {text}
     </Button>
   );
 };
 
 CancelButton.propTypes = {
-  onClick: PropTypes.func,
-  text: PropTypes.string
+  onClick: PropTypes.func.isRequired,
+  text: PropTypes.string.isRequired,
 };
 
 export default CancelButton;

@@ -1,17 +1,15 @@
 import Cookies from 'js-cookie';
 
 export const isAuthenticated = () => {
-  return ((Cookies.get('currentUser') !== 'undefined') ? true : false);
+  return Cookies.get('currentUser') !== 'undefined' ? true : false;
 };
 
 export const currentUserRole = () => {
-  if (isAuthenticated())
-  {
+  if (isAuthenticated()) {
     try {
       const role = JSON.parse(Cookies.get('currentUser')).roles[0];
       return role;
-    }
-    catch{
+    } catch {
       return 'Guest';
     }
   }

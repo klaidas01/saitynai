@@ -10,16 +10,10 @@ import * as yup from 'yup';
 import { Formik } from 'formik';
 import { DialogContent } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import axiosInstance from '../../services/axiosInstance';
-import Cookies from 'js-cookie';
 
 const loginSchema = yup.object({
-  name: yup
-    .string()
-    .required('Username is required.'),
-  password: yup
-    .string()
-    .required('Password is required.')
+  name: yup.string().required('Username is required.'),
+  password: yup.string().required('Password is required.'),
 });
 
 const useStyles = makeStyles(() => ({
@@ -35,9 +29,23 @@ const useStyles = makeStyles(() => ({
   error: {
     color: 'red',
   },
+  inactive: {
+    textDecoration: 'inherit',
+    textTransform: 'none',
+    color: '#9e9e9e',
+    marginRight: '2%',
+    whiteSpace: 'nowrap',
+  },
+  active: {
+    textTransform: 'none',
+    color: '#9e9e9e',
+    fontWeight: 'bold',
+    marginRight: '2%',
+    whiteSpace: 'nowrap',
+  },
 }));
 
-const LoginModal = ({active, inactive, setRole}) => {
+const LoginModal = ({ onSubmit }) => {
   const [open, setOpen] = React.useState(false);
   const classes = useStyles();
 
@@ -51,52 +59,50 @@ const LoginModal = ({active, inactive, setRole}) => {
 
   return (
     <div>
-      <Button variant="text" onClick={handleClickOpen} className = {open ? active : inactive}>
+      <Button
+        data-testid="modalButton"
+        variant="text"
+        onClick={handleClickOpen}
+        className={open ? classes.active : classes.inactive}
+      >
         Login
       </Button>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth={true} maxWidth="sm">
+      <Dialog
+        data-testid="dialog"
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+        fullWidth={true}
+        maxWidth="sm"
+      >
         <DialogTitle>Login</DialogTitle>
         <DialogContent>
           <Formik
             initialValues={{
               name: '',
-              password: ''
+              password: '',
             }}
             validationSchema={loginSchema}
             onSubmit={(values) => {
-              const postLogin = async (values) => {
-                try {
-                  const response = await axiosInstance.post('users/token', {username: values.name, password: values.password});
-                  if (!response.data.message)
-                  {
-                    Cookies.set('currentUser', response.data, { secure: true });
-                    setRole(response.data.roles[0]);
-                    console.log('login success');
-                  }
-                  else
-                  {
-                    console.log('login failed');
-                  }
-                }
-                catch (e) {
-                  console.log(e);
-                }
-              };
-              postLogin(values);
+              onSubmit(values);
             }}
           >
             {(formikProps) => (
               <>
                 <TextField
+                  inputProps={{ 'data-testid': 'usernameInput' }}
                   label="Username"
                   onChange={formikProps.handleChange('name')}
                   value={formikProps.values.name}
                   fullWidth
                 />
                 {formikProps.errors.name && formikProps.touched.name ? (
-                  <div className={classes.error}>{formikProps.errors.name}</div>
+                  <div data-testid="usernameError" className={classes.error}>
+                    {formikProps.errors.name}
+                  </div>
                 ) : null}
                 <TextField
+                  inputProps={{ 'data-testid': 'passwordInput' }}
                   onChange={formikProps.handleChange('password')}
                   value={formikProps.values.password}
                   label="Password"
@@ -104,14 +110,20 @@ const LoginModal = ({active, inactive, setRole}) => {
                   fullWidth
                 />
                 {formikProps.errors.password && formikProps.touched.password ? (
-                  <div className={classes.error}>{formikProps.errors.password}</div>
+                  <div data-testid="passwordError" className={classes.error}>
+                    {formikProps.errors.password}
+                  </div>
                 ) : null}
                 <div className={classes.buttons}>
-                  <div className={classes.button}><CancelButton onClick={handleClose} text="Cancel" /></div>
-                  <div className={classes.button}><ConfirmButton onClick={formikProps.handleSubmit} text="Submit" /></div>
+                  <div className={classes.button}>
+                    <CancelButton onClick={handleClose} text="Cancel" />
+                  </div>
+                  <div className={classes.button}>
+                    <ConfirmButton onClick={formikProps.handleSubmit} text="Submit" />
+                  </div>
                 </div>
-              </>)
-            }
+              </>
+            )}
           </Formik>
         </DialogContent>
       </Dialog>
@@ -120,9 +132,7 @@ const LoginModal = ({active, inactive, setRole}) => {
 };
 
 LoginModal.propTypes = {
-  active: PropTypes.string,
-  inactive: PropTypes.string,
-  setRole: PropTypes.func
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default LoginModal;

@@ -2,13 +2,11 @@ import { React } from 'react';
 import PropTypes from 'prop-types';
 
 const BookList = (props) => {
-  return (
-    <div>Book list. Library id: {props.match.params.libraryId}</div>
-  );
+  return <div>Book list. Library id: {props.match.params.libraryId}</div>;
 };
 
 BookList.propTypes = {
-  match: PropTypes.object
+  match: PropTypes.object.isRequired,
 };
 
 export default BookList;

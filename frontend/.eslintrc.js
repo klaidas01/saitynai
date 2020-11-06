@@ -1,26 +1,34 @@
+/* eslint-disable linebreak-style */
 module.exports = {
-  'env': {
-    'browser': true,
-    'es2021': true
-  },
-  'extends': [
-    'eslint:recommended',
-    'plugin:react/recommended'
+  parser: "babel-eslint",
+  extends: [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "prettier",
+    "prettier/react",
+    "plugin:prettier/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
   ],
-  'parserOptions': {
-    'ecmaFeatures': {
-      'jsx': true
-    },
-    'ecmaVersion': 12,
-    'sourceType': 'module'
+  plugins: ["react", "prettier", "react-hooks"],
+  rules: {
+    "linebreak-style": ["error", "windows"],
+    "no-var": "error",
+    "prefer-const": "error",
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/no-unused-prop-types": "error",
+    "react/require-default-props": "error",
+    "prettier/prettier": "error",
+    "no-duplicate-imports": "error",
+    "no-restricted-imports": "error",
+    "no-mixed-requires": "error",
   },
-  'plugins': [
-    'react'
-  ],
-  'rules': {
-    'quotes': ['error', 'single'],
-    'semi': ['error', 'always'],
-    'indent': ['error', 2],
-    'no-multi-spaces': ['error']
-  }
+  env: {
+    browser: true,
+    commonjs: true,
+    es6: true,
+    node: true,
+    jest: true,
+  },
 };

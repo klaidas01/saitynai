@@ -6,9 +6,9 @@ import LibraryList from './../libraries/LibraryList';
 const Routes = () => {
   return (
     <Switch>
-      <Route exact path='/libraries' component={LibraryList}/>
-      <Route path="/libraries/:libraryId/books" component={BookList}/>
-      <Redirect to="/libraries"/>
+      <Route exact path="/libraries" component={LibraryList} />
+      <Route path="/libraries/:libraryId/books" component={BookList} />
+      <Redirect to="/libraries" />
     </Switch>
   );
 };

@@ -5,7 +5,6 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@testing-library/jest-dom": "^5.11.5",
-    "@testing-library/react": "^11.1.1",
     "@testing-library/user-event": "^12.2.0",
     "axios": "^0.21.0",
     "formik": "^2.2.1",
@@ -45,10 +44,13 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/react": "^11.1.1",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "prettier": "^2.1.2"
+    "jest-dom": "^4.0.0",
+    "prettier": "^2.1.2",
+    "react-test-render": "^1.1.2"
   }
 }

@@ -7,19 +7,17 @@ const Layout = (props) => {
   return (
     <>
       <NavBar />
-      <Container>
-        {props.children}
-      </Container>
+      <Container>{props.children}</Container>
     </>
   );
 };
 
 Layout.propTypes = {
-  children: PropTypes.any
+  children: PropTypes.any,
 };
 
 Layout.defaultProps = {
-  children: []
+  children: [],
 };
 
 export default Layout;
