@@ -23,13 +23,11 @@ namespace LibraryAPI.Services
     public class UserService : IUserService
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWT _jwt;
         private readonly ILibraryRepository _libraryRepo;
-        public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt, ILibraryRepository libraryRepo)
+        public UserService(UserManager<ApplicationUser> userManager, IOptions<JWT> jwt, ILibraryRepository libraryRepo)
         {
             _userManager = userManager;
-            _roleManager = roleManager;
             _jwt = jwt.Value;
             _libraryRepo = libraryRepo;
         }

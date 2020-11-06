@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace LibraryAPI.Services
@@ -39,8 +40,10 @@ namespace LibraryAPI.Services
             return book;
         }
 
-        public async Task<int> PostBook(BookDTO book, string userName, string role)
+        public async Task<int> PostBook(BookDTO book, ClaimsPrincipal u)
         {
+            var role = u.FindFirst(ClaimTypes.Role).Value;
+            var userName = u.FindFirstValue(ClaimTypes.NameIdentifier);
             if (role == "Employee")
             {
                 var user = await _userManager.FindByNameAsync(userName);
@@ -59,8 +62,10 @@ namespace LibraryAPI.Services
             return id;
         }
 
-        public async Task<Book> DeleteBook(int id, string userName, string role)
+        public async Task<Book> DeleteBook(int id, ClaimsPrincipal u)
         {
+            var role = u.FindFirst(ClaimTypes.Role).Value;
+            var userName = u.FindFirstValue(ClaimTypes.NameIdentifier);
             var book = await _repo.GetBook(id);
             if (role == "Employee")
             {
@@ -72,8 +77,10 @@ namespace LibraryAPI.Services
             return book;
         }
 
-        public async Task<int> UpdateBook(int id, BookDTO book, string userName, string role)
+        public async Task<int> UpdateBook(int id, BookDTO book, ClaimsPrincipal u)
         {
+            var role = u.FindFirst(ClaimTypes.Role).Value;
+            var userName = u.FindFirstValue(ClaimTypes.NameIdentifier);
             var oldBook = await _repo.GetUntrackedBook(id);
             if (oldBook == null)
             {

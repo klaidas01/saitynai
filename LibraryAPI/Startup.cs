@@ -39,6 +39,10 @@ namespace LibraryAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+                                                                    .AllowAnyMethod()
+                                                                     .AllowAnyHeader()));
+
             services.Configure<JWT>(Configuration.GetSection("JWT"));
 
             services.Configure<JWT>(token => token.Key = Environment.GetEnvironmentVariable("JWT_KEY"));
@@ -123,6 +127,8 @@ namespace LibraryAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors("AllowAll");
 
             app.UseSwagger();
 

@@ -50,11 +50,9 @@ namespace LibraryAPI.Controllers
         [Authorize(Roles = "Administrator,Employee")]
         public async Task<IActionResult> PutBook(int id, BookDTO book)
         {
-            var role = this.User.FindFirst(ClaimTypes.Role).Value;
-            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
             try
             {
-                await _bookService.UpdateBook(id, book, userName, role);
+                await _bookService.UpdateBook(id, book, User);
                 return NoContent();
             }
             catch (DbUpdateException)
@@ -74,13 +72,11 @@ namespace LibraryAPI.Controllers
         // POST: api/Books
         [HttpPost]
         [Authorize(Roles = "Administrator,Employee")]
-        public async Task<ActionResult<Book>> PostBook(BookDTO book)
+        public async Task<ActionResult<BookDTO>> PostBook(BookDTO book)
         {
-            var role = this.User.FindFirst(ClaimTypes.Role).Value;
-            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
             try
             {
-                var bookId = await _bookService.PostBook(book, userName, role);
+                var bookId = await _bookService.PostBook(book, User);
 
                 return CreatedAtAction("GetBook", new { id = bookId }, book);
             }
@@ -99,11 +95,9 @@ namespace LibraryAPI.Controllers
         [Authorize(Roles = "Administrator,Employee")]
         public async Task<ActionResult<Book>> DeleteBook(int id)
         {
-            var role = this.User.FindFirst(ClaimTypes.Role).Value;
-            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
             try
             {
-                var book = await _bookService.DeleteBook(id, userName, role);
+                var book = await _bookService.DeleteBook(id, User);
                 return Ok(book);
             }
             catch (ArgumentNullException)
