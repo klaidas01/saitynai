@@ -7,12 +7,12 @@ import '@testing-library/jest-dom/extend-expect';
 
 const mockColumns = [
   { id: 'col1', label: 'Column1', minWidth: 170 },
-  { id: 'col2', label: 'Column2', minWidth: 170 },
+  { id: 'col2', label: 'Column2', minWidth: 170, format: (value) => value.toFixed(2) },
   { id: 'col3', label: 'Column3', minWidth: 170 },
 ];
 
 const mockItems = [
-  { id: 1, col1: 'item1value1', col2: 'item1value2', col3: 'item1value3' },
+  { id: 1, col1: 'item1value1', col2: 2.999, col3: 'item1value3' },
   { id: 2, col1: 'item2value1', col2: 'item2value2', col3: 'item2value3' },
   { id: 3, col1: 'item3value1', col2: 'item3value2', col3: 'item3value3' },
   { id: 4, col1: 'item4value1', col2: 'item4value2', col3: 'item4value3' },
