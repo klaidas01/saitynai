@@ -2,21 +2,58 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import PropTypes from 'prop-types';
 import ConfirmButton from '../../common/ConfirmButton';
 import CancelButton from '../../common/CancelButton';
-import { currentUserRole } from '../../services/authService';
+import * as yup from 'yup';
+import { Formik } from 'formik';
+import { DialogContent } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
-const RegisterModal = ({ active, inactive }) => {
+const registerSchema = yup.object({
+  fname: yup.string().required('First name is required.'),
+  lname: yup.string().required('Last name is required.'),
+  email: yup.string().required('E-mail is required.').email('Invalid E-mail.'),
+  name: yup.string().required('Username is required.'),
+  password: yup.string().required('Password is required.'),
+});
+
+const useStyles = makeStyles(() => ({
+  buttons: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginTop: '3%',
+    marginBottom: '2%',
+  },
+  button: {
+    marginRight: '3%',
+  },
+  error: {
+    color: 'red',
+  },
+  inactive: {
+    textDecoration: 'inherit',
+    textTransform: 'none',
+    color: '#9e9e9e',
+    marginRight: '2%',
+    whiteSpace: 'nowrap',
+  },
+  active: {
+    textTransform: 'none',
+    color: '#9e9e9e',
+    fontWeight: 'bold',
+    marginRight: '2%',
+    whiteSpace: 'nowrap',
+  },
+}));
+
+const RegisterModal = ({ onSubmit }) => {
   const [open, setOpen] = React.useState(false);
+  const classes = useStyles();
 
   const handleClickOpen = () => {
     setOpen(true);
-    console.log(currentUserRole());
-    console.log(active);
   };
 
   const handleClose = () => {
@@ -25,30 +62,119 @@ const RegisterModal = ({ active, inactive }) => {
 
   return (
     <div>
-      <Button variant="text" onClick={handleClickOpen} className={open ? active : inactive}>
+      <Button
+        data-testid="modalButton"
+        variant="text"
+        onClick={handleClickOpen}
+        className={open ? classes.active : classes.inactive}
+      >
         Sign Up
       </Button>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="login-title">Register</DialogTitle>
+      <Dialog
+        data-testid="dialog"
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+        fullWidth={true}
+        maxWidth="sm"
+      >
+        <DialogTitle>Sign Up</DialogTitle>
         <DialogContent>
-          <TextField margin="dense" id="name" label="Username" type="text" fullWidth />
-          <TextField margin="dense" id="fname" label="First Name" type="text" fullWidth />
-          <TextField margin="dense" id="lname" label="Last Name" type="text" fullWidth />
-          <TextField margin="dense" id="email" label="Email" type="email" fullWidth />
-          <TextField margin="dense" id="password" label="Password" type="password" fullWidth />
+          <Formik
+            initialValues={{
+              name: '',
+              fname: '',
+              lname: '',
+              email: '',
+              password: '',
+            }}
+            validationSchema={registerSchema}
+            onSubmit={(values) => {
+              onSubmit(values);
+            }}
+          >
+            {(formikProps) => (
+              <>
+                <TextField
+                  inputProps={{ 'data-testid': 'usernameInput' }}
+                  label="Username"
+                  onChange={formikProps.handleChange('name')}
+                  value={formikProps.values.name}
+                  fullWidth
+                />
+                {formikProps.errors.name && formikProps.touched.name ? (
+                  <div data-testid="usernameError" className={classes.error}>
+                    {formikProps.errors.name}
+                  </div>
+                ) : null}
+                <TextField
+                  inputProps={{ 'data-testid': 'fnameInput' }}
+                  label="First name"
+                  onChange={formikProps.handleChange('fname')}
+                  value={formikProps.values.fname}
+                  fullWidth
+                />
+                {formikProps.errors.fname && formikProps.touched.fname ? (
+                  <div data-testid="fnameError" className={classes.error}>
+                    {formikProps.errors.fname}
+                  </div>
+                ) : null}
+                <TextField
+                  inputProps={{ 'data-testid': 'lnameInput' }}
+                  label="Last name"
+                  onChange={formikProps.handleChange('lname')}
+                  value={formikProps.values.lname}
+                  fullWidth
+                />
+                {formikProps.errors.lname && formikProps.touched.lname ? (
+                  <div data-testid="lnameError" className={classes.error}>
+                    {formikProps.errors.lname}
+                  </div>
+                ) : null}
+                <TextField
+                  inputProps={{ 'data-testid': 'emailInput' }}
+                  label="E-mail address"
+                  onChange={formikProps.handleChange('email')}
+                  value={formikProps.values.email}
+                  fullWidth
+                />
+                {formikProps.errors.email && formikProps.touched.email ? (
+                  <div data-testid="emailError" className={classes.error}>
+                    {formikProps.errors.email}
+                  </div>
+                ) : null}
+                <TextField
+                  inputProps={{ 'data-testid': 'passwordInput' }}
+                  onChange={formikProps.handleChange('password')}
+                  value={formikProps.values.password}
+                  label="Password"
+                  type="password"
+                  fullWidth
+                />
+                {formikProps.errors.password && formikProps.touched.password ? (
+                  <div data-testid="passwordError" className={classes.error}>
+                    {formikProps.errors.password}
+                  </div>
+                ) : null}
+                <div className={classes.buttons}>
+                  <div className={classes.button}>
+                    <CancelButton onClick={handleClose} text="Cancel" />
+                  </div>
+                  <div className={classes.button}>
+                    <ConfirmButton onClick={formikProps.handleSubmit} text="Submit" />
+                  </div>
+                </div>
+              </>
+            )}
+          </Formik>
         </DialogContent>
-        <DialogActions>
-          <CancelButton onClick={handleClose} text="Cancel" />
-          <ConfirmButton onClick={handleClose} text="Submit" />
-        </DialogActions>
       </Dialog>
     </div>
   );
 };
 
 RegisterModal.propTypes = {
-  active: PropTypes.string.isRequired,
-  inactive: PropTypes.string.isRequired,
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default RegisterModal;

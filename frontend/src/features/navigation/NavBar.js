@@ -73,6 +73,24 @@ const NavBar = () => {
     postLogin(values);
   };
 
+  const onRegister = (values) => {
+    const postRegister = async (values) => {
+      try {
+        await axiosInstance.post('users/register', {
+          firstname: values.fname,
+          lastname: values.lname,
+          username: values.name,
+          email: values.email,
+          password: values.password,
+        });
+        console.log('Register success');
+      } catch (e) {
+        console.log(e.message);
+      }
+    };
+    postRegister(values);
+  };
+
   const classes = useStyles();
   return (
     <AppBar position="sticky" className={classes.appBar}>
@@ -93,7 +111,7 @@ const NavBar = () => {
             <LoginModal onSubmit={(values) => onLogin(values)} />
           </ProtectedComponent>
           <ProtectedComponent roles={['Guest']} role={role}>
-            <RegisterModal active={classes.navActive} inactive={classes.navButton} />
+            <RegisterModal onSubmit={(values) => onRegister(values)} />
           </ProtectedComponent>
           <ProtectedComponent roles={['Administrator', 'Employee', 'User']} role={role}>
             <Button
