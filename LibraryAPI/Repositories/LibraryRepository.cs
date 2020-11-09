@@ -1,4 +1,5 @@
 ﻿using LibraryAPI.Context;
+using LibraryAPI.DTO;
 using LibraryAPI.Models;
 using LibraryAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,19 @@ namespace LibraryAPI.Repositories
                 .ToListAsync();
 
             return libraries;
+        }
+
+        public async Task<ItemsDTO<Library>> GetSlice(int page, int rowsPerPage, string searchTerm)
+        {
+            var count = _context.Libraries.Count(l => l.Name.ToLower().Contains(searchTerm.ToLower()));
+
+            var libraries = await _context.Libraries
+                .Where(l => l.Name.ToLower().Contains(searchTerm.ToLower()))
+                .Skip((page) * rowsPerPage)
+                .Take(rowsPerPage)
+                .ToListAsync();
+
+            return new ItemsDTO<Library> { items = libraries, count = count };
         }
 
         public async Task<Library> GetLibrary(int id)

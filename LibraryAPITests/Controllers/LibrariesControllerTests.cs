@@ -7,6 +7,7 @@ using LibraryAPI.Services.Interfaces;
 using LibraryAPITests.Mock;
 using Microsoft.AspNetCore.Mvc;
 using LibraryAPI.Models;
+using LibraryAPI.DTO;
 
 namespace LibraryAPI.Controllers.Tests
 {
@@ -25,12 +26,12 @@ namespace LibraryAPI.Controllers.Tests
         public void GetLibrariesTest()
         {
             //Act
-            var result = controller.GetLibraries();
+            var result = controller.GetLibraries(new DTO.SliceDTO());
 
             //Assert
             Assert.IsType<OkObjectResult>(result.Result.Result);
-            var items = Assert.IsType<List<Library>>((result.Result.Result as OkObjectResult).Value);
-            Assert.Equal(3, items.Count);
+            var items = Assert.IsType<ItemsDTO<Library>>((result.Result.Result as OkObjectResult).Value);
+            Assert.Equal(3, items.items.Count);
         }
 
         [Fact()]

@@ -81,7 +81,7 @@ it('Renders table items', async () => {
   await waitFor(() => {
     expect(table).toHaveTextContent('itemvalue1');
     expect(table).toHaveTextContent('item4value1');
-    expect(table).toHaveTextContent('item6value1');
+    expect(table).toHaveTextContent('3.00');
   });
 });
 

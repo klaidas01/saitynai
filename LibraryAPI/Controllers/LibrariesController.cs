@@ -26,9 +26,9 @@ namespace LibraryAPI.Controllers
 
         // GET: api/Libraries
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Library>>> GetLibraries()
+        public async Task<ActionResult<IEnumerable<Library>>> GetLibraries([FromQuery]SliceDTO slice)
         {
-            var libraries = await _libraryService.GetLibraries();
+            var libraries = await _libraryService.GetSlice(slice.Page, slice.RowsPerPage, (slice.SearchTerm != null) ? slice.SearchTerm : "");
             return Ok(libraries);
         }
 

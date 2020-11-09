@@ -17,11 +17,11 @@ namespace LibraryAPITests.Mock
         {
             var mock = new Mock<ILibraryService>();
 
-            mock.Setup(service => service.GetLibraries()).Returns(Task.FromResult(new List<Library> {
+            mock.Setup(service => service.GetSlice(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(new ItemsDTO<Library> { items = new List<Library> {
             new Library {Id = 1, Name = "Name 1", Address = "Address 1"},
             new Library {Id = 2, Name = "Name 2", Address = "Address 2"},
             new Library {Id = 3, Name = "Name 3", Address = "Address 3"}
-            }));
+            }, count = 3 }));
 
             mock.Setup(service => service.GetLibrary(It.IsInRange<int>(1, 3, Moq.Range.Inclusive))).Returns((int id) => Task.FromResult(new Library { Id = id, Name = "Name 1", Address = "Address 1" }));
             mock.Setup(service => service.GetLibrary(It.Is<int>(i => i > 3 || i < 1))).Returns(Task.FromResult<Library>(null));

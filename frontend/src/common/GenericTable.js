@@ -17,9 +17,6 @@ const useStyles = makeStyles(() => ({
     fontSize: 14,
     fontWeight: 'bold',
   },
-  container: {
-    marginTop: '5%',
-  },
 }));
 
 const GenericTable = ({
@@ -83,13 +80,23 @@ const GenericTable = ({
 };
 
 GenericTable.propTypes = {
-  items: PropTypes.array.isRequired,
-  page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
-  count: PropTypes.number.isRequired,
-  columns: PropTypes.array.isRequired,
-  handlePageChange: PropTypes.func.isRequired,
-  handleRowsPerPageChange: PropTypes.func.isRequired,
+  items: PropTypes.array,
+  page: PropTypes.number,
+  rowsPerPage: PropTypes.number,
+  count: PropTypes.number,
+  columns: PropTypes.array,
+  handlePageChange: PropTypes.func,
+  handleRowsPerPageChange: PropTypes.func,
+};
+
+GenericTable.defaultProps = {
+  items: [],
+  page: 0,
+  rowsPerPage: 0,
+  count: 0,
+  columns: [],
+  handlePageChange: () => {},
+  handleRowsPerPageChange: () => {},
 };
 
 export default GenericTable;
