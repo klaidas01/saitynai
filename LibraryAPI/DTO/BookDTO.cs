@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -15,11 +16,6 @@ namespace LibraryAPI.DTO
         public string Author { get; set; }
 
         [Required]
-        [Range(0.1, 10,
-        ErrorMessage = "Value for {0} must be between {1} and {2}.")]
-        public double? Rating { get; set; }
-
-        [Required]
         [Range(1, Double.PositiveInfinity,
         ErrorMessage = "Value for {0} must be more than 0")]
         public int? PageCount { get; set; }
@@ -31,5 +27,7 @@ namespace LibraryAPI.DTO
 
         [Required]
         public int LibraryId { get; set; }
+
+        public IFormFile coverImage { get; set; }
     }
 }

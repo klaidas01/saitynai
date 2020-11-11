@@ -104,7 +104,6 @@ namespace LibraryAPITests.ControllerUnitTests
                 Title = "test",
                 Author = "test",
                 Description = "test",
-                Rating = -10,
                 PageCount = 100,
                 LibraryId = 1
             };
@@ -113,7 +112,6 @@ namespace LibraryAPITests.ControllerUnitTests
                 Title = "test",
                 Author = "test",
                 Description = "test",
-                Rating = 100,
                 PageCount = 100,
                 LibraryId = 1
             };
@@ -138,7 +136,6 @@ namespace LibraryAPITests.ControllerUnitTests
                 Title = "test",
                 Author = "test",
                 Description = "test",
-                Rating = 8,
                 PageCount = -100,
                 LibraryId = 1
             };
@@ -160,7 +157,6 @@ namespace LibraryAPITests.ControllerUnitTests
                 Title = "test",
                 Author = "test",
                 Description = "test",
-                Rating = 8,
                 PageCount = 100,
                 LibraryId = 1
             };
@@ -181,7 +177,6 @@ namespace LibraryAPITests.ControllerUnitTests
                 Title = "test",
                 Author = "test",
                 Description = "test",
-                Rating = 10,
                 PageCount = 100,
                 LibraryId = 1
             };
@@ -202,7 +197,6 @@ namespace LibraryAPITests.ControllerUnitTests
                 Title = "test",
                 Author = "test",
                 Description = "test",
-                Rating = 10,
                 PageCount = 100,
                 LibraryId = 1
             };
@@ -249,7 +243,6 @@ namespace LibraryAPITests.ControllerUnitTests
                 Title = "test",
                 Author = "test",
                 Description = "test",
-                Rating = 10,
                 PageCount = 100,
                 LibraryId = 1
             };
@@ -268,7 +261,6 @@ namespace LibraryAPITests.ControllerUnitTests
                 Title = "test",
                 Author = "test",
                 Description = "test",
-                Rating = 10,
                 PageCount = 100,
                 LibraryId = 1
             };
@@ -287,7 +279,6 @@ namespace LibraryAPITests.ControllerUnitTests
                 Title = "test",
                 Author = "test",
                 Description = "test",
-                Rating = 10,
                 PageCount = 100,
                 LibraryId = 1
             };
@@ -301,7 +292,6 @@ namespace LibraryAPITests.ControllerUnitTests
             Assert.Equal("test", updatedBook.Title);
             Assert.Equal("test", updatedBook.Author);
             Assert.Equal("test", updatedBook.Description);
-            Assert.Equal(10, updatedBook.Rating);
             Assert.Equal(100, updatedBook.PageCount);
         }
 

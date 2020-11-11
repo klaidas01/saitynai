@@ -46,6 +46,12 @@ const useStyles = makeStyles(() => ({
     marginRight: '2%',
     whiteSpace: 'nowrap',
   },
+  header: {
+    backgroundColor: '#9bceff',
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
 }));
 
 const RegisterModal = ({ onSubmit }) => {
@@ -78,7 +84,7 @@ const RegisterModal = ({ onSubmit }) => {
         fullWidth={true}
         maxWidth="sm"
       >
-        <DialogTitle>Sign Up</DialogTitle>
+        <DialogTitle className={classes.header}>Sign Up</DialogTitle>
         <DialogContent>
           <Formik
             initialValues={{
@@ -161,7 +167,13 @@ const RegisterModal = ({ onSubmit }) => {
                     <CancelButton onClick={handleClose} text="Cancel" />
                   </div>
                   <div className={classes.button}>
-                    <ConfirmButton onClick={formikProps.handleSubmit} text="Submit" />
+                    <ConfirmButton
+                      onClick={(values) => {
+                        formikProps.handleSubmit(values);
+                        handleClose();
+                      }}
+                      text="Submit"
+                    />
                   </div>
                 </div>
               </>

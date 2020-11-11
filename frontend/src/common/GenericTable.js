@@ -9,6 +9,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles(() => ({
   header: {
@@ -16,6 +17,9 @@ const useStyles = makeStyles(() => ({
     color: 'white',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  center: {
+    marginLeft: '50%',
   },
 }));
 
@@ -27,6 +31,8 @@ const GenericTable = ({
   count,
   handlePageChange,
   handleRowsPerPageChange,
+  onRowClick,
+  isLoading,
 }) => {
   const classes = useStyles();
 
@@ -47,23 +53,41 @@ const GenericTable = ({
                 </TableCell>
               ))}
             </TableRow>
+            {isLoading && (
+              <TableRow>
+                <TableCell colSpan={columns.length}>
+                  <CircularProgress className={classes.center} />
+                </TableCell>
+              </TableRow>
+            )}
           </TableHead>
-          <TableBody>
-            {items.map((row) => {
-              return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                  {columns.map((column) => {
-                    const value = row[column.id];
-                    return (
-                      <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number' ? column.format(value) : value}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              );
-            })}
-          </TableBody>
+          {!isLoading && (
+            <TableBody>
+              {items.map((row) => {
+                return (
+                  <TableRow
+                    hover
+                    onClick={() => {
+                      onRowClick(row);
+                    }}
+                    tabIndex={-1}
+                    key={row.id}
+                  >
+                    {columns.map((column) => {
+                      const value = row[column.id];
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          {column.format && typeof value === 'number'
+                            ? column.format(value)
+                            : value}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
       <TablePagination
@@ -87,6 +111,8 @@ GenericTable.propTypes = {
   columns: PropTypes.array,
   handlePageChange: PropTypes.func,
   handleRowsPerPageChange: PropTypes.func,
+  onRowClick: PropTypes.func,
+  isLoading: PropTypes.bool,
 };
 
 GenericTable.defaultProps = {
@@ -97,6 +123,8 @@ GenericTable.defaultProps = {
   columns: [],
   handlePageChange: () => {},
   handleRowsPerPageChange: () => {},
+  onRowClick: () => {},
+  isLoading: false,
 };
 
 export default GenericTable;

@@ -72,7 +72,7 @@ namespace LibraryAPI.Controllers
         // POST: api/Books
         [HttpPost]
         [Authorize(Roles = "Administrator,Employee")]
-        public async Task<ActionResult<BookDTO>> PostBook(BookDTO book)
+        public async Task<ActionResult<BookDTO>> PostBook([FromForm]BookDTO book)
         {
             try
             {

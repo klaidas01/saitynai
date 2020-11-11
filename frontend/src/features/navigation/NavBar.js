@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import { NavLink } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
 import Cookies from 'js-cookie';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles(() => ({
   title: {
@@ -51,6 +52,7 @@ const useStyles = makeStyles(() => ({
 
 const NavBar = () => {
   const [role, setRole] = useState(currentUserRole());
+  const { enqueueSnackbar } = useSnackbar();
 
   const onLogin = (values) => {
     const postLogin = async (values) => {
@@ -62,12 +64,30 @@ const NavBar = () => {
         if (!response.data.message) {
           Cookies.set('currentUser', response.data, { secure: true });
           setRole(response.data.roles[0]);
-          console.log('login success');
+          enqueueSnackbar('Login success', {
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+            variant: 'success',
+          });
         } else {
-          console.log('login failed');
+          enqueueSnackbar(response.data.message, {
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+            variant: 'error',
+          });
         }
       } catch (e) {
-        console.log(e);
+        enqueueSnackbar('Login failed', {
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+          variant: 'error',
+        });
       }
     };
     postLogin(values);
@@ -83,9 +103,21 @@ const NavBar = () => {
           email: values.email,
           password: values.password,
         });
-        console.log('Register success');
+        enqueueSnackbar('Registration success', {
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+          variant: 'success',
+        });
       } catch (e) {
-        console.log(e.message);
+        enqueueSnackbar('Registration failed', {
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+          variant: 'error',
+        });
       }
     };
     postRegister(values);

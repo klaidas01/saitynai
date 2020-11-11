@@ -2,18 +2,22 @@ import React, { useState, useEffect } from 'react';
 import GenericTable from './../../common/GenericTable';
 import TextField from '@material-ui/core/TextField';
 import axiosInstance from './../../services/axiosInstance';
+import PropTypes from 'prop-types';
+import { useSnackbar } from 'notistack';
 
 const columns = [
   { id: 'name', label: 'Name', minWidth: 170 },
   { id: 'address', label: 'Address', minWidth: 170 },
 ];
 
-const LibraryList = () => {
+const LibraryList = ({ onRowClick }) => {
   const [items, setItems] = useState([]);
   const [count, setCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
 
   const fetchItems = async (page, rowsPerPage, searchTerm) => {
     try {
@@ -26,8 +30,16 @@ const LibraryList = () => {
       });
       setItems(response.data.items);
       setCount(response.data.count);
+      setRowsPerPage(rowsPerPage);
+      setPage(page);
     } catch (e) {
-      console.log(e);
+      enqueueSnackbar('Could not get libraries', {
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+        variant: 'error',
+      });
     }
   };
 
@@ -37,21 +49,20 @@ const LibraryList = () => {
   };
 
   const handleRowsPerPageChange = async (event) => {
-    setPage(0);
     await fetchItems(0, +event.target.value, searchTerm);
-    setRowsPerPage(+event.target.value);
   };
 
   useEffect(() => {
     const loadItems = async () => {
+      setIsLoading(true);
       fetchItems(page, rowsPerPage, searchTerm);
+      setIsLoading(false);
     };
     loadItems();
   }, []);
 
   useEffect(() => {
     const loadItems = async () => {
-      setPage(0);
       await fetchItems(0, rowsPerPage, searchTerm);
     };
     const delayDebounceFn = setTimeout(() => {
@@ -77,9 +88,19 @@ const LibraryList = () => {
         rowsPerPage={rowsPerPage}
         handlePageChange={handlePageChange}
         handleRowsPerPageChange={handleRowsPerPageChange}
+        onRowClick={onRowClick}
+        isLoading={isLoading}
       />
     </div>
   );
+};
+
+LibraryList.propTypes = {
+  onRowClick: PropTypes.func,
+};
+
+LibraryList.defaultProps = {
+  onRowClick: () => {},
 };
 
 export default LibraryList;

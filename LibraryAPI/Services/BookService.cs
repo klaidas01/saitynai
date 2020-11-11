@@ -2,9 +2,11 @@
 using LibraryAPI.Models;
 using LibraryAPI.Repositories.Interfaces;
 using LibraryAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -50,14 +52,15 @@ namespace LibraryAPI.Services
                 if (user.LibraryId != book.LibraryId)
                     throw new UnauthorizedAccessException();
             }
+            var byteStream = (book.coverImage != null) ? await GetBytes(book.coverImage) : null;
             var id = await _repo.PostBook(new Book { 
                 Title = book.Title,
                 Author = book.Author,
-                Rating = (double)book.Rating,
                 PageCount = (int)book.PageCount,
                 Description = book.Description,
                 LibraryId = book.LibraryId,
-                IsReserved = false
+                IsReserved = false,
+                CoverImage = byteStream
             });
             return id;
         }
@@ -97,13 +100,21 @@ namespace LibraryAPI.Services
                 Id = id,
                 Title = book.Title,
                 Author = book.Author,
-                Rating = (double)book.Rating,
                 PageCount = (int)book.PageCount,
                 Description = book.Description,
                 LibraryId = book.LibraryId,
                 IsReserved = book.IsReserved
             });
             return id;
+        }
+
+        public async Task<byte[]> GetBytes(IFormFile formFile)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                await formFile.CopyToAsync(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
     }
 }

@@ -17,9 +17,9 @@ namespace LibraryAPITests.Mock
 
         public MockBookService()
         {
-            repo = new List<Book> { new Book { Id = 1, Author = "Author 1", Description = "Description 1", Title = "Title 1", LibraryId = 1, Rating = 7.6, PageCount = 101 },
-                                    new Book { Id = 2, Author = "Author 2", Description = "Description 2", Title = "Title 2", LibraryId = 1, Rating = 9.5, PageCount = 308 },
-                                    new Book { Id = 3, Author = "Author 3", Description = "Description 3", Title = "Title 3", LibraryId = 2, Rating = 4.8, PageCount = 258 }
+            repo = new List<Book> { new Book { Id = 1, Author = "Author 1", Description = "Description 1", Title = "Title 1", LibraryId = 1, PageCount = 101 },
+                                    new Book { Id = 2, Author = "Author 2", Description = "Description 2", Title = "Title 2", LibraryId = 1, PageCount = 308 },
+                                    new Book { Id = 3, Author = "Author 3", Description = "Description 3", Title = "Title 3", LibraryId = 2, PageCount = 258 }
             };
         }
 
@@ -53,7 +53,6 @@ namespace LibraryAPITests.Mock
                 Id = 4,
                 Title = book.Title,
                 Author = book.Author,
-                Rating = (double)book.Rating,
                 PageCount = (int)book.PageCount,
                 Description = book.Description,
                 LibraryId = book.LibraryId,
@@ -74,7 +73,6 @@ namespace LibraryAPITests.Mock
                 Id = oldBook.Id,
                 Title = book.Title,
                 Author = book.Author,
-                Rating = (double)book.Rating,
                 PageCount = (int)book.PageCount,
                 Description = book.Description,
                 LibraryId = book.LibraryId,

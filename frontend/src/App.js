@@ -2,14 +2,17 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import Layout from './features/navigation/Layout';
 import Routes from './features/navigation/Routes';
+import { SnackbarProvider } from 'notistack';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Layout>
-        <Routes />
-      </Layout>
-    </BrowserRouter>
+    <SnackbarProvider maxSnack={3}>
+      <BrowserRouter>
+        <Layout>
+          <Routes />
+        </Layout>
+      </BrowserRouter>
+    </SnackbarProvider>
   );
 }
 

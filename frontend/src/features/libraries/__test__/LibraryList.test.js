@@ -7,6 +7,7 @@ import MockAdapter from 'axios-mock-adapter';
 import axiosInstance from './../../../services/axiosInstance';
 import { act } from 'react-dom/test-utils';
 import { cleanup, waitFor, render, fireEvent } from '@testing-library/react';
+import { SnackbarProvider } from 'notistack';
 
 const axiosMock = new MockAdapter(axiosInstance);
 
@@ -72,12 +73,21 @@ afterEach(cleanup);
 it('renders without crashing', async () => {
   const div = document.createElement('div');
   await act(async () => {
-    ReactDOM.render(<LibraryList />, div);
+    ReactDOM.render(
+      <SnackbarProvider>
+        <LibraryList />
+      </SnackbarProvider>,
+      div
+    );
   });
 });
 
 it('renders columns', async () => {
-  const { getByTestId } = render(<LibraryList />);
+  const { getByTestId } = render(
+    <SnackbarProvider>
+      <LibraryList />
+    </SnackbarProvider>
+  );
 
   const table = getByTestId('table');
 
@@ -88,7 +98,11 @@ it('renders columns', async () => {
 });
 
 it('fetches first page of libraries on render', async () => {
-  const { getByTestId } = render(<LibraryList />);
+  const { getByTestId } = render(
+    <SnackbarProvider>
+      <LibraryList />
+    </SnackbarProvider>
+  );
 
   const table = getByTestId('table');
 
@@ -100,7 +114,11 @@ it('fetches first page of libraries on render', async () => {
 });
 
 it('Search fetches filtered libraries', async () => {
-  const { getByTestId } = render(<LibraryList />);
+  const { getByTestId } = render(
+    <SnackbarProvider>
+      <LibraryList />
+    </SnackbarProvider>
+  );
 
   const SearchBar = getByTestId('searchBar');
   const table = getByTestId('table');
@@ -116,7 +134,11 @@ it('Search fetches filtered libraries', async () => {
 });
 
 it('Next page button fetches second page of libraries', async () => {
-  const { getByTestId } = render(<LibraryList />);
+  const { getByTestId } = render(
+    <SnackbarProvider>
+      <LibraryList />
+    </SnackbarProvider>
+  );
 
   const table = getByTestId('table');
   const nextPageButton = getByTestId('nextPageButton');
@@ -130,7 +152,11 @@ it('Next page button fetches second page of libraries', async () => {
 });
 
 it('Increasing rows per page fetches more libraries', async () => {
-  const { getByTestId } = render(<LibraryList />);
+  const { getByTestId } = render(
+    <SnackbarProvider>
+      <LibraryList />
+    </SnackbarProvider>
+  );
 
   const table = getByTestId('table');
   const rowsPerPageButton = getByTestId('rowsPerPageButton');
