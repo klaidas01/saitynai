@@ -55,7 +55,7 @@ const LibraryList = ({ onRowClick }) => {
   useEffect(() => {
     const loadItems = async () => {
       setIsLoading(true);
-      fetchItems(page, rowsPerPage, searchTerm);
+      await fetchItems(page, rowsPerPage, searchTerm);
       setIsLoading(false);
     };
     loadItems();
