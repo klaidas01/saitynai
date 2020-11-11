@@ -22,7 +22,7 @@ axiosMock
     ],
     count: 7,
   })
-  .onGet('libraries', { params: { Page: 0, RowsPerPage: 5, SearchTerm: 'Search' } })
+  .onGet('libraries', { params: { Page: 0, RowsPerPage: 5, SearchTerm: 'Second' } })
   .reply(200, {
     items: [{ id: 4, name: 'SecondGroup1', address: 'Address' }],
     count: 1,
@@ -106,7 +106,7 @@ it('Search fetches filtered libraries', async () => {
   const table = getByTestId('table');
   fireEvent.change(SearchBar, {
     target: {
-      value: 'Search',
+      value: 'Second',
     },
   });
   await waitFor(() => {
