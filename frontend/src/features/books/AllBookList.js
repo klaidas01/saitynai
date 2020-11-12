@@ -1,29 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import GenericTable from './../../common/GenericTable';
-import TextField from '@material-ui/core/TextField';
-import axiosInstance from './../../services/axiosInstance';
-import PropTypes from 'prop-types';
+import { React, useState, useEffect } from 'react';
+import BookList from './BookList';
 import { useSnackbar } from 'notistack';
+import axiosInstance from './../../services/axiosInstance';
+import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
 import { IconButton, InputAdornment } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import { NavLink } from 'react-router-dom';
 
-const columns = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'address', label: 'Address', minWidth: 170 },
-];
-
-const LibraryList = ({ onRowClick }) => {
+const AllBookList = () => {
   const [items, setItems] = useState([]);
   const [count, setCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   const fetchItems = async (page, rowsPerPage, searchTerm) => {
     try {
-      const response = await axiosInstance.get('libraries', {
+      const response = await axiosInstance.get('books', {
         params: {
           Page: page,
           RowsPerPage: rowsPerPage,
@@ -35,7 +31,7 @@ const LibraryList = ({ onRowClick }) => {
       setRowsPerPage(rowsPerPage);
       setPage(page);
     } catch (e) {
-      enqueueSnackbar('Could not get libraries', {
+      enqueueSnackbar('Could not get books', {
         anchorOrigin: {
           vertical: 'bottom',
           horizontal: 'center',
@@ -89,27 +85,27 @@ const LibraryList = ({ onRowClick }) => {
           ),
         }}
       />
-      <GenericTable
-        columns={columns}
+      <Button type="button" component={NavLink} to="/books/create">
+        Temp book create
+      </Button>
+      <BookList
         items={items}
         count={count}
         page={page}
         rowsPerPage={rowsPerPage}
         handlePageChange={handlePageChange}
         handleRowsPerPageChange={handleRowsPerPageChange}
-        onRowClick={onRowClick}
         isLoading={isLoading}
-      />
+      ></BookList>
     </div>
   );
 };
 
-LibraryList.propTypes = {
-  onRowClick: PropTypes.func,
-};
+export default AllBookList;
 
-LibraryList.defaultProps = {
-  onRowClick: () => {},
-};
-
-export default LibraryList;
+/*
+Book list. Library id: {props.match.params.libraryId}
+      <Button type="button" component={NavLink} to="/books/create">
+        Temp book form link
+      </Button> 
+*/

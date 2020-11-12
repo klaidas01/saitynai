@@ -139,6 +139,15 @@ const NavBar = () => {
           >
             Libraries
           </Button>
+          <Button
+            component={NavLink}
+            exact
+            to="/books"
+            className={classes.navButton}
+            activeClassName={classes.navActive}
+          >
+            Books
+          </Button>
           <ProtectedComponent roles={['Guest']} role={role}>
             <LoginModal onSubmit={(values) => onLogin(values)} />
           </ProtectedComponent>
