@@ -1,5 +1,4 @@
 import React from 'react';
-import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -10,6 +9,7 @@ import TableRow from '@material-ui/core/TableRow';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { Box } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
   header: {
@@ -17,6 +17,20 @@ const useStyles = makeStyles(() => ({
     color: 'white',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  headerFirst: {
+    backgroundColor: '#9bceff',
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
+    borderRadius: '16px 0px 0px 0px',
+  },
+  headerLast: {
+    backgroundColor: '#9bceff',
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
+    borderRadius: '0px 16px 0px 0px',
   },
   center: {
     marginLeft: '50%',
@@ -37,17 +51,23 @@ const GenericTable = ({
   const classes = useStyles();
 
   return (
-    <Paper className={classes.container}>
+    <Box className={classes.container} border={1} borderColor="grey.400" borderRadius={16}>
       <TableContainer>
         <Table data-testid="table">
           <TableHead>
             <TableRow>
-              {columns.map((column) => (
+              {columns.map((column, index) => (
                 <TableCell
                   key={column.id}
                   align={column.align}
                   style={{ minWidth: column.minWidth }}
-                  className={classes.header}
+                  className={
+                    index !== 0 && index !== columns.length - 1
+                      ? classes.header
+                      : index === 0
+                      ? classes.headerFirst
+                      : classes.headerLast
+                  }
                 >
                   {column.label}
                 </TableCell>
@@ -99,7 +119,7 @@ const GenericTable = ({
         onChangePage={handlePageChange}
         onChangeRowsPerPage={handleRowsPerPageChange}
       />
-    </Paper>
+    </Box>
   );
 };
 

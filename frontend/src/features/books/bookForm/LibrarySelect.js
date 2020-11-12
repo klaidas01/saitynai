@@ -1,10 +1,11 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import PropTypes from 'prop-types';
 import LibraryList from './../../libraries/LibraryList';
+import axiosInstance from './../../../services/axiosInstance';
 
-const LibrarySelect = ({ className, setId }) => {
+const LibrarySelect = ({ className, setId, libraryId, disabled }) => {
   const [value, setValue] = useState('');
   const [shrink, setShrink] = useState(false);
   const [open, setOpen] = useState(false);
@@ -23,6 +24,16 @@ const LibrarySelect = ({ className, setId }) => {
     handleClose();
   };
 
+  useEffect(() => {
+    const fetchLibrary = async () => {
+      const response = await axiosInstance.get('libraries/' + libraryId);
+      setValue(response.data);
+      setId(+response.data.id);
+      setShrink(true);
+    };
+    if (libraryId) fetchLibrary();
+  }, [libraryId]);
+
   return (
     <div>
       <TextField
@@ -36,6 +47,7 @@ const LibrarySelect = ({ className, setId }) => {
         variant="outlined"
         label="Book's library"
         InputLabelProps={{ shrink: shrink }}
+        disabled={disabled}
       />
       <Dialog
         data-testid="dialog"
@@ -54,10 +66,14 @@ const LibrarySelect = ({ className, setId }) => {
 LibrarySelect.propTypes = {
   setId: PropTypes.func.isRequired,
   className: PropTypes.string,
+  libraryId: PropTypes.number,
+  disabled: PropTypes.bool,
 };
 
 LibrarySelect.defaultProps = {
   className: '',
+  libraryId: undefined,
+  disabled: false,
 };
 
 export default LibrarySelect;

@@ -30,6 +30,18 @@ namespace LibraryAPI.Services
             return books;
         }
 
+        public async Task<ItemsDTO<Book>> GetSlice(int page, int rowsPerPage, string searchTerm = "")
+        {
+            var books = await _repo.GetSlice(page, rowsPerPage, searchTerm);
+            return books;
+        }
+
+        public async Task<ItemsDTO<Book>> GetLibrarySlice(int page, int rowsPerPage, int libraryId, string searchTerm = "")
+        {
+            var books = await _repo.GetLibrarySlice(page, rowsPerPage, libraryId, searchTerm);
+            return books;
+        }
+
         public async Task<List<Book>> GetLibraryBooks(int libraryId)
         {
             var books = await _repo.GetLibraryBooks(libraryId);

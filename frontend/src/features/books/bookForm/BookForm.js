@@ -37,6 +37,7 @@ const useStyles = makeStyles(() => ({
   container: {
     marginTop: '2%',
     paddingBottom: '2%',
+    borderRadius: '16px',
   },
   header: {
     backgroundColor: '#9bceff',
@@ -44,6 +45,7 @@ const useStyles = makeStyles(() => ({
     padding: '1.5%',
     paddingLeft: '5%',
     marginBottom: '2%',
+    borderRadius: '16px 16px 0px 0px',
   },
   section1: {
     alignSelf: 'flex-start',
@@ -83,7 +85,15 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const BookForm = ({ title, author, pageCount, description, libraryId, onSubmit }) => {
+const BookForm = ({
+  title,
+  author,
+  pageCount,
+  description,
+  libraryId,
+  onSubmit,
+  libraryDisabled,
+}) => {
   const classes = useStyles();
   return (
     <Paper variant="outlined" className={classes.container}>
@@ -156,6 +166,8 @@ const BookForm = ({ title, author, pageCount, description, libraryId, onSubmit }
               <LibrarySelect
                 className={classes.field}
                 setId={(id) => formikProps.setFieldValue('libraryId', id)}
+                libraryId={libraryId}
+                disabled={libraryDisabled}
               />
               {formikProps.errors.libraryId && formikProps.touched.libraryId ? (
                 <div className={classes.error}>{formikProps.errors.libraryId}</div>
@@ -203,6 +215,7 @@ BookForm.propTypes = {
   description: PropTypes.string,
   onSubmit: PropTypes.func,
   libraryId: PropTypes.number,
+  libraryDisabled: PropTypes.bool,
 };
 
 BookForm.defaultProps = {
@@ -214,6 +227,7 @@ BookForm.defaultProps = {
     console.log(values);
   },
   libraryId: undefined,
+  libraryDisabled: false,
 };
 
 export default BookForm;

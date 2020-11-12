@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { AppBar, Typography, Toolbar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ReactComponent as Logo } from './Icons/book.svg';
 import LoginModal from '../auth/LoginModal';
 import RegisterModal from '../auth/RegisterModal';
 import ProtectedComponent from '../../common/ProtectedComponent';
-import { currentUserRole, logOut } from '../../services/authService';
+import { logOut, RoleContext } from '../../services/authService';
 import Button from '@material-ui/core/Button';
 import { NavLink } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
 import Cookies from 'js-cookie';
 import { useSnackbar } from 'notistack';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(() => ({
   title: {
@@ -22,6 +23,10 @@ const useStyles = makeStyles(() => ({
     backgroundColor: '#eeeeee',
     display: 'inline-block',
     verticalAlign: 'middle',
+  },
+  auth: {
+    display: 'flex',
+    marginRight: '18%',
   },
   icon: {
     maxHeight: 25,
@@ -50,9 +55,9 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const NavBar = () => {
-  const [role, setRole] = useState(currentUserRole());
+const NavBar = ({ setRole }) => {
   const { enqueueSnackbar } = useSnackbar();
+  const role = useContext(RoleContext);
 
   const onLogin = (values) => {
     const postLogin = async (values) => {
@@ -62,7 +67,7 @@ const NavBar = () => {
           password: values.password,
         });
         if (!response.data.message) {
-          Cookies.set('currentUser', response.data, { secure: true });
+          Cookies.set('currentUser', response.data, { secure: true, sameSite: 'Strict' });
           setRole(response.data.roles[0]);
           enqueueSnackbar('Login success', {
             anchorOrigin: {
@@ -148,6 +153,8 @@ const NavBar = () => {
           >
             Books
           </Button>
+        </div>
+        <div className={classes.auth}>
           <ProtectedComponent roles={['Guest']} role={role}>
             <LoginModal onSubmit={(values) => onLogin(values)} />
           </ProtectedComponent>
@@ -167,6 +174,10 @@ const NavBar = () => {
       </Toolbar>
     </AppBar>
   );
+};
+
+NavBar.propTypes = {
+  setRole: PropTypes.func.isRequired,
 };
 
 export default NavBar;

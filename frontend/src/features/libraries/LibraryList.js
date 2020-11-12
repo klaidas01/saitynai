@@ -1,16 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import GenericTable from './../../common/GenericTable';
 import TextField from '@material-ui/core/TextField';
 import axiosInstance from './../../services/axiosInstance';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import SearchIcon from '@material-ui/icons/Search';
-import { IconButton, InputAdornment } from '@material-ui/core';
+import { IconButton, InputAdornment, Paper } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import NavButton from './../../common/NavButton';
+import ProtectedComponent from './../../common/ProtectedComponent';
+import { RoleContext } from '../../services/authService';
 
-const columns = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'address', label: 'Address', minWidth: 170 },
-];
+const useStyles = makeStyles(() => ({
+  search: {
+    flexGrow: '1',
+  },
+  container: {
+    marginTop: '2%',
+    padding: '1%',
+  },
+  actions: {
+    display: 'flex',
+    marginBottom: '1%',
+  },
+}));
 
 const LibraryList = ({ onRowClick }) => {
   const [items, setItems] = useState([]);
@@ -20,6 +33,13 @@ const LibraryList = ({ onRowClick }) => {
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const classes = useStyles();
+  const role = useContext(RoleContext);
+
+  const columns = [
+    { id: 'name', label: 'Name', minWidth: 170 },
+    { id: 'address', label: 'Address', minWidth: 170 },
+  ];
 
   const fetchItems = async (page, rowsPerPage, searchTerm) => {
     try {
@@ -75,20 +95,27 @@ const LibraryList = ({ onRowClick }) => {
   }, [searchTerm]);
 
   return (
-    <div>
-      <TextField
-        label="Search"
-        onChange={(e) => setSearchTerm(e.target.value)}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment>
-              <IconButton disabled>
-                <SearchIcon />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-      />
+    <Paper className={classes.container}>
+      <div className={classes.actions}>
+        <TextField
+          className={classes.search}
+          variant="outlined"
+          label="Search"
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment>
+                <IconButton disabled>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        <ProtectedComponent role={role} roles={['Administrator']}>
+          <NavButton route="/books/create" text="Add new library" />
+        </ProtectedComponent>
+      </div>
       <GenericTable
         columns={columns}
         items={items}
@@ -100,7 +127,7 @@ const LibraryList = ({ onRowClick }) => {
         onRowClick={onRowClick}
         isLoading={isLoading}
       />
-    </div>
+    </Paper>
   );
 };
 

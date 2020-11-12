@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 const { REACT_APP_API_URL } = process.env;
 
 const axiosInstance = axios.create({
-  baseURL: REACT_APP_API_URL,
+  baseURL: REACT_APP_API_URL ? REACT_APP_API_URL : 'https://localhost:44382/api/',
   timeout: 30000,
 });
 

@@ -1,8 +1,9 @@
 import { React } from 'react';
 import BookForm from './BookForm';
 import axiosInstance from './../../../services/axiosInstance';
+import PropTypes from 'prop-types';
 
-const NewBook = () => {
+const NewBook = (props) => {
   const onSumbit = (values) => {
     const uploadItem = async () => {
       const formData = new FormData();
@@ -26,8 +27,19 @@ const NewBook = () => {
     };
     uploadItem();
   };
-
+  if (props.match.params.libraryId)
+    return (
+      <BookForm onSubmit={onSumbit} libraryId={+props.match.params.libraryId} libraryDisabled />
+    );
   return <BookForm onSubmit={onSumbit} />;
+};
+
+NewBook.propTypes = {
+  match: PropTypes.object,
+};
+
+NewBook.defaultProps = {
+  match: { params: {} },
 };
 
 export default NewBook;

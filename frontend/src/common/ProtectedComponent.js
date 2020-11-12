@@ -6,7 +6,7 @@ const ProtectedComponent = ({ children, roles, role }) => {
     return null;
   }
 
-  return <div data-testid="protectedComponent">{children}</div>;
+  return <>{children}</>;
 };
 
 ProtectedComponent.propTypes = {

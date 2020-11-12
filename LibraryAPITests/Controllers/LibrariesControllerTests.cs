@@ -38,7 +38,7 @@ namespace LibraryAPI.Controllers.Tests
         public void GetLibraryBooksTestInvalidLibrary()
         {
             //Act
-            var result = controller.GetLibraryBooks(999);
+            var result = controller.GetLibraryBooks(new SliceDTO(), 999);
 
             //Assert
             Assert.IsType<NotFoundResult>(result.Result.Result);
@@ -48,7 +48,7 @@ namespace LibraryAPI.Controllers.Tests
         public void GetLibraryBooksTest()
         {
             //Act
-            var result = controller.GetLibraryBooks(1);
+            var result = controller.GetLibraryBooks(new SliceDTO(), 1);
 
             //Assert
             Assert.IsType<OkObjectResult>(result.Result.Result);

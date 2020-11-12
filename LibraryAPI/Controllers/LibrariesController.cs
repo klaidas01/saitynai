@@ -34,14 +34,14 @@ namespace LibraryAPI.Controllers
 
         // GET: api/Libraries/1/books
         [HttpGet("{libraryId}/books")]
-        public async Task<ActionResult<Library>> GetLibraryBooks([FromRoute] int libraryId)
+        public async Task<ActionResult<Library>> GetLibraryBooks([FromQuery] SliceDTO slice, [FromRoute] int libraryId)
         {
             var library = await _libraryService.GetLibrary(libraryId);
             if (library == null)
             {
                 return NotFound();
             }
-            var books = await _bookService.GetLibraryBooks(libraryId);
+            var books = await _bookService.GetLibrarySlice(slice.Page, slice.RowsPerPage, libraryId, (slice.SearchTerm != null) ? slice.SearchTerm : "");
             return Ok(books);
         }
 

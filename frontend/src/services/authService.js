@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie';
+import React from 'react';
 
 export const isAuthenticated = () => {
   return Cookies.get('currentUser') !== 'undefined' ? true : false;
@@ -20,3 +21,7 @@ export const logOut = (setRole) => {
   Cookies.remove('currentUser');
   setRole('Guest');
 };
+
+export const RoleContext = React.createContext('Guest');
+
+export const RoleProvider = RoleContext.Provider;

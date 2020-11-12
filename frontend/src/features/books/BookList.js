@@ -1,132 +1,147 @@
-import React from 'react';
-import {
-  Paper,
-  Typography,
-  GridList,
-  GridListTile,
-  GridListTileBar,
-  IconButton,
-} from '@material-ui/core';
-import TablePagination from '@material-ui/core/TablePagination';
+import { React, useState, useEffect, useContext } from 'react';
+import ImageGridList from './ImageGridList';
+import { useSnackbar } from 'notistack';
+import axiosInstance from '../../services/axiosInstance';
+import TextField from '@material-ui/core/TextField';
+import SearchIcon from '@material-ui/icons/Search';
+import { IconButton, InputAdornment, Paper } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import NavButton from '../../common/NavButton';
 import PropTypes from 'prop-types';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-
-import defaultCover from './Images/CoverNotAvailable.jpg';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import ProtectedComponent from '../../common/ProtectedComponent';
+import { RoleContext } from '../../services/authService';
 
 const useStyles = makeStyles(() => ({
-  header: {
-    backgroundColor: '#9bceff',
-    color: 'white',
-    padding: '1.5%',
-    paddingLeft: '5%',
-    marginBottom: '3%',
-  },
-  center: {
-    marginLeft: '50%',
+  search: {
+    flexGrow: '1',
   },
   container: {
-    paddingLeft: '5%',
-    paddingRight: '5%',
+    marginTop: '2%',
+    padding: '1%',
   },
-  cover: {
-    height: '14vw',
-    width: '100%',
-  },
-  coverMd: {
-    height: '25vw',
-    width: '100%',
-  },
-  button: {
-    color: 'white',
+  actions: {
+    display: 'flex',
+    marginBottom: '1%',
   },
 }));
 
-const BookList = ({
-  items,
-  page,
-  rowsPerPage,
-  count,
-  handlePageChange,
-  handleRowsPerPageChange,
-  onBookClick,
-  isLoading,
-}) => {
+const BookList = (props) => {
+  const [items, setItems] = useState([]);
+  const [count, setCount] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
-  const theme = useTheme();
-  const mediumBreakpoint = useMediaQuery(theme.breakpoints.up('md'));
+  const role = useContext(RoleContext);
+
+  const fetchItems = async (page, rowsPerPage, searchTerm) => {
+    try {
+      const response = await axiosInstance.get(
+        props.match.params.libraryId
+          ? 'libraries/' + props.match.params.libraryId + '/books'
+          : 'books',
+        {
+          params: {
+            Page: page,
+            RowsPerPage: rowsPerPage,
+            SearchTerm: searchTerm,
+          },
+        }
+      );
+      setItems(response.data.items);
+      setCount(response.data.count);
+      setRowsPerPage(rowsPerPage);
+      setPage(page);
+    } catch (e) {
+      enqueueSnackbar('Could not get books', {
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+        variant: 'error',
+      });
+    }
+  };
+
+  const handlePageChange = async (event, newPage) => {
+    await fetchItems(newPage, rowsPerPage, searchTerm);
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = async (event) => {
+    await fetchItems(0, +event.target.value, searchTerm);
+  };
+
+  useEffect(() => {
+    const loadItems = async () => {
+      setIsLoading(true);
+      await fetchItems(page, rowsPerPage, searchTerm);
+      setIsLoading(false);
+    };
+    loadItems();
+  }, []);
+
+  useEffect(() => {
+    const loadItems = async () => {
+      await fetchItems(0, rowsPerPage, searchTerm);
+    };
+    const delayDebounceFn = setTimeout(() => {
+      loadItems();
+    }, 1000);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
 
   return (
-    <Paper>
-      <Typography component="h2" variant="h6" className={classes.header}>
-        Books
-      </Typography>
-      <div className={classes.container}>
-        {isLoading && <CircularProgress className={classes.center} />}
-        {!isLoading && (
-          <GridList cellHeight="auto" spacing={30} cols={mediumBreakpoint ? 5 : 3}>
-            {items.map((tile) => (
-              <GridListTile key={tile.id}>
-                <img
-                  src={tile.coverImage ? `data:image/jpeg;base64,${tile.coverImage}` : defaultCover}
-                  alt={tile.title}
-                  className={mediumBreakpoint ? classes.cover : classes.coverMd}
-                />
-                <GridListTileBar
-                  title={tile.title}
-                  subtitle={<span>by: {tile.author}</span>}
-                  actionIcon={
-                    <IconButton
-                      aria-label={`info about ${tile.title}`}
-                      className={classes.button}
-                      onClick={() => onBookClick(tile.id)}
-                    >
-                      <InfoOutlinedIcon />
-                    </IconButton>
-                  }
-                />
-              </GridListTile>
-            ))}
-          </GridList>
-        )}
-        <TablePagination
-          labelRowsPerPage="Books per page"
-          rowsPerPageOptions={[10, 20, 40]}
-          component="div"
-          count={count}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handlePageChange}
-          onChangeRowsPerPage={handleRowsPerPageChange}
+    <Paper className={classes.container}>
+      <div className={classes.actions}>
+        <TextField
+          className={classes.search}
+          variant="outlined"
+          label="Search"
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment>
+                <IconButton disabled>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
+        <ProtectedComponent role={role} roles={['Administrator', 'Employee']}>
+          <NavButton route="books/create" text="Add new book" />
+        </ProtectedComponent>
       </div>
+      <ImageGridList
+        items={items}
+        count={count}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        handlePageChange={handlePageChange}
+        handleRowsPerPageChange={handleRowsPerPageChange}
+        isLoading={isLoading}
+      ></ImageGridList>
     </Paper>
   );
 };
 
 BookList.propTypes = {
-  items: PropTypes.array,
-  page: PropTypes.number,
-  rowsPerPage: PropTypes.number,
-  count: PropTypes.number,
-  handlePageChange: PropTypes.func,
-  handleRowsPerPageChange: PropTypes.func,
-  onBookClick: PropTypes.func,
-  isLoading: PropTypes.bool,
+  match: PropTypes.object,
 };
 
 BookList.defaultProps = {
-  items: [],
-  page: 0,
-  rowsPerPage: 0,
-  count: 0,
-  handlePageChange: () => {},
-  handleRowsPerPageChange: () => {},
-  onBookClick: () => {},
-  isLoading: false,
+  match: { params: {} },
 };
 
 export default BookList;
+
+/*
+Book list. Library id: {props.match.params.libraryId}
+      <Button type="button" component={NavLink} to="/books/create">
+        Temp book form link
+      </Button> 
+*/
