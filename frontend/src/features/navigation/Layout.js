@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import NavBar from './NavBar';
 import { makeStyles } from '@material-ui/core/styles';
-import { currentUserRole, RoleProvider } from '../../services/authService';
+import { currentUser, UserProvider } from '../../services/authService';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -14,12 +14,13 @@ const useStyles = makeStyles(() => ({
 
 const Layout = (props) => {
   const classes = useStyles();
-  const [role, setRole] = useState(currentUserRole());
+  const [user, setUser] = useState(currentUser());
+
   return (
-    <RoleProvider value={role}>
-      <NavBar setRole={setRole} />
+    <UserProvider value={{ ...user, setUser: setUser }}>
+      <NavBar />
       <div className={classes.container}>{props.children}</div>
-    </RoleProvider>
+    </UserProvider>
   );
 };
 

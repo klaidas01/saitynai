@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import GenericTable from './../../common/GenericTable';
 import TextField from '@material-ui/core/TextField';
 import axiosInstance from './../../services/axiosInstance';
@@ -9,7 +9,7 @@ import { IconButton, InputAdornment, Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import NavButton from './../../common/NavButton';
 import ProtectedComponent from './../../common/ProtectedComponent';
-import { RoleContext } from '../../services/authService';
+import { UserContext } from '../../services/authService';
 
 const useStyles = makeStyles(() => ({
   search: {
@@ -25,7 +25,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const LibraryList = ({ onRowClick }) => {
+const LibraryList = ({ onRowClick, renderButtons }) => {
   const [items, setItems] = useState([]);
   const [count, setCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,7 +34,8 @@ const LibraryList = ({ onRowClick }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
-  const role = useContext(RoleContext);
+  const user = useContext(UserContext);
+  const didMount = useRef(false);
 
   const columns = [
     { id: 'name', label: 'Name', minWidth: 170 },
@@ -42,6 +43,7 @@ const LibraryList = ({ onRowClick }) => {
   ];
 
   const fetchItems = async (page, rowsPerPage, searchTerm) => {
+    setIsLoading(true);
     try {
       const response = await axiosInstance.get('libraries', {
         params: {
@@ -63,6 +65,7 @@ const LibraryList = ({ onRowClick }) => {
         variant: 'error',
       });
     }
+    setIsLoading(false);
   };
 
   const handlePageChange = async (event, newPage) => {
@@ -76,22 +79,22 @@ const LibraryList = ({ onRowClick }) => {
 
   useEffect(() => {
     const loadItems = async () => {
-      setIsLoading(true);
       await fetchItems(page, rowsPerPage, searchTerm);
-      setIsLoading(false);
     };
     loadItems();
   }, []);
 
   useEffect(() => {
-    const loadItems = async () => {
-      await fetchItems(0, rowsPerPage, searchTerm);
-    };
-    const delayDebounceFn = setTimeout(() => {
-      loadItems();
-    }, 1000);
+    if (didMount.current) {
+      const loadItems = async () => {
+        await fetchItems(0, rowsPerPage, searchTerm);
+      };
+      const delayDebounceFn = setTimeout(() => {
+        loadItems();
+      }, 1000);
 
-    return () => clearTimeout(delayDebounceFn);
+      return () => clearTimeout(delayDebounceFn);
+    } else didMount.current = true;
   }, [searchTerm]);
 
   return (
@@ -112,9 +115,11 @@ const LibraryList = ({ onRowClick }) => {
             ),
           }}
         />
-        <ProtectedComponent role={role} roles={['Administrator']}>
-          <NavButton route="/books/create" text="Add new library" />
-        </ProtectedComponent>
+        {renderButtons && (
+          <ProtectedComponent role={user.role} roles={['Administrator']}>
+            <NavButton route="/books/create" text="Add new library" />
+          </ProtectedComponent>
+        )}
       </div>
       <GenericTable
         columns={columns}
@@ -133,10 +138,12 @@ const LibraryList = ({ onRowClick }) => {
 
 LibraryList.propTypes = {
   onRowClick: PropTypes.func,
+  renderButtons: PropTypes.bool,
 };
 
 LibraryList.defaultProps = {
   onRowClick: () => {},
+  renderButtons: true,
 };
 
 export default LibraryList;

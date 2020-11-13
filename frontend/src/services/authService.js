@@ -5,23 +5,23 @@ export const isAuthenticated = () => {
   return Cookies.get('currentUser') !== 'undefined' ? true : false;
 };
 
-export const currentUserRole = () => {
+export const currentUser = () => {
   if (isAuthenticated()) {
     try {
-      const role = JSON.parse(Cookies.get('currentUser')).roles[0];
-      return role;
+      const user = JSON.parse(Cookies.get('currentUser'));
+      return user;
     } catch {
-      return 'Guest';
+      return { role: 'Guest' };
     }
   }
-  return 'Guest';
+  return { role: 'Guest' };
 };
 
-export const logOut = (setRole) => {
+export const logOut = (setUser) => {
   Cookies.remove('currentUser');
-  setRole('Guest');
+  setUser({ role: 'Guest' });
 };
 
-export const RoleContext = React.createContext('Guest');
+export const UserContext = React.createContext({ role: 'Guest' });
 
-export const RoleProvider = RoleContext.Provider;
+export const UserProvider = UserContext.Provider;

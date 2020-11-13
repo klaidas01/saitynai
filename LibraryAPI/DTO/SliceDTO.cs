@@ -13,6 +13,7 @@ namespace LibraryAPI.DTO
         [BindRequired]
         public int Page { get; set; }
         [BindRequired]
+        [Range(1, 40)]
         public int RowsPerPage { get; set; }
 
         public string SearchTerm { get; set; }

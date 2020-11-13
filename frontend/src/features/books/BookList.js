@@ -1,4 +1,4 @@
-import { React, useState, useEffect, useContext } from 'react';
+import { React, useState, useEffect, useContext, useRef } from 'react';
 import ImageGridList from './ImageGridList';
 import { useSnackbar } from 'notistack';
 import axiosInstance from '../../services/axiosInstance';
@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import NavButton from '../../common/NavButton';
 import PropTypes from 'prop-types';
 import ProtectedComponent from '../../common/ProtectedComponent';
-import { RoleContext } from '../../services/authService';
+import { UserContext } from '../../services/authService';
 
 const useStyles = makeStyles(() => ({
   search: {
@@ -34,9 +34,11 @@ const BookList = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
-  const role = useContext(RoleContext);
+  const user = useContext(UserContext);
+  const didMount = useRef(false);
 
   const fetchItems = async (page, rowsPerPage, searchTerm) => {
+    setIsLoading(true);
     try {
       const response = await axiosInstance.get(
         props.match.params.libraryId
@@ -63,6 +65,7 @@ const BookList = (props) => {
         variant: 'error',
       });
     }
+    setIsLoading(false);
   };
 
   const handlePageChange = async (event, newPage) => {
@@ -76,22 +79,21 @@ const BookList = (props) => {
 
   useEffect(() => {
     const loadItems = async () => {
-      setIsLoading(true);
       await fetchItems(page, rowsPerPage, searchTerm);
-      setIsLoading(false);
     };
     loadItems();
   }, []);
 
   useEffect(() => {
-    const loadItems = async () => {
-      await fetchItems(0, rowsPerPage, searchTerm);
-    };
-    const delayDebounceFn = setTimeout(() => {
-      loadItems();
-    }, 1000);
-
-    return () => clearTimeout(delayDebounceFn);
+    if (didMount.current) {
+      const loadItems = async () => {
+        await fetchItems(0, rowsPerPage, searchTerm);
+      };
+      const delayDebounceFn = setTimeout(() => {
+        loadItems();
+      }, 1000);
+      return () => clearTimeout(delayDebounceFn);
+    } else didMount.current = true;
   }, [searchTerm]);
 
   return (
@@ -112,9 +114,11 @@ const BookList = (props) => {
             ),
           }}
         />
-        <ProtectedComponent role={role} roles={['Administrator', 'Employee']}>
-          <NavButton route="books/create" text="Add new book" />
-        </ProtectedComponent>
+        {props.renderButtons && (
+          <ProtectedComponent role={user.role} roles={['Administrator', 'Employee']}>
+            <NavButton route="books/create" text="Add new book" />
+          </ProtectedComponent>
+        )}
       </div>
       <ImageGridList
         items={items}
@@ -131,17 +135,12 @@ const BookList = (props) => {
 
 BookList.propTypes = {
   match: PropTypes.object,
+  renderButtons: PropTypes.bool,
 };
 
 BookList.defaultProps = {
   match: { params: {} },
+  renderButtons: true,
 };
 
 export default BookList;
-
-/*
-Book list. Library id: {props.match.params.libraryId}
-      <Button type="button" component={NavLink} to="/books/create">
-        Temp book form link
-      </Button> 
-*/

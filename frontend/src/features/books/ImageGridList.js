@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Typography,
   GridList,
@@ -16,6 +16,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import BookModal from './BookModal';
 
 const useStyles = makeStyles(() => ({
   header: {
@@ -32,6 +33,7 @@ const useStyles = makeStyles(() => ({
   container: {
     paddingLeft: '5%',
     paddingRight: '5%',
+    paddingBottom: '3%',
   },
   cover: {
     height: '14vw',
@@ -44,6 +46,9 @@ const useStyles = makeStyles(() => ({
   button: {
     color: 'white',
   },
+  pagination: {
+    borderTop: '1px solid #bdbdbd',
+  },
 }));
 
 const ImageGridList = ({
@@ -53,15 +58,22 @@ const ImageGridList = ({
   count,
   handlePageChange,
   handleRowsPerPageChange,
-  onBookClick,
   isLoading,
 }) => {
   const classes = useStyles();
   const theme = useTheme();
   const mediumBreakpoint = useMediaQuery(theme.breakpoints.up('md'));
+  const [open, setOpen] = useState(false);
+  const [book, setBook] = useState({ library: {} });
+
+  const onBookClick = (item) => {
+    setBook(item);
+    setOpen(true);
+  };
 
   return (
     <Box border={1} borderColor="grey.400" borderRadius={16}>
+      <BookModal open={open} book={book} handleClose={() => setOpen(false)} />
       <Box className={classes.header}>
         <Typography component="h2" variant="h6">
           Books
@@ -85,7 +97,7 @@ const ImageGridList = ({
                     <IconButton
                       aria-label={`info about ${tile.title}`}
                       className={classes.button}
-                      onClick={() => onBookClick(tile.id)}
+                      onClick={() => onBookClick(tile)}
                     >
                       <InfoOutlinedIcon />
                     </IconButton>
@@ -95,6 +107,8 @@ const ImageGridList = ({
             ))}
           </GridList>
         )}
+      </div>
+      <div className={classes.pagination}>
         <TablePagination
           labelRowsPerPage="Books per page"
           rowsPerPageOptions={[10, 20, 40]}
@@ -117,7 +131,6 @@ ImageGridList.propTypes = {
   count: PropTypes.number,
   handlePageChange: PropTypes.func,
   handleRowsPerPageChange: PropTypes.func,
-  onBookClick: PropTypes.func,
   isLoading: PropTypes.bool,
 };
 
@@ -128,7 +141,6 @@ ImageGridList.defaultProps = {
   count: 0,
   handlePageChange: () => {},
   handleRowsPerPageChange: () => {},
-  onBookClick: () => {},
   isLoading: false,
 };
 

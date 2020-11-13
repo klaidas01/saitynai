@@ -34,14 +34,18 @@ axiosInstance.interceptors.response.use(
   },
   async function (error) {
     const originalRequest = error.config;
-    if (error.response.status === 403 && !originalRequest._retry) {
+    if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      const currentUser = Cookies.get('currentUser');
-      const response = await axiosInstance.post('users/refresh', {
-        accesstoken: currentUser.token,
-        refreshtoken: currentUser.refreshToken,
-      });
-      Cookies.set('currentUser', response.data, { secure: true });
+      try {
+        const currentUser = JSON.parse(Cookies.get('currentUser'));
+        const response = await axiosInstance.post('users/refresh', {
+          accessToken: currentUser.token,
+          refreshToken: currentUser.refreshToken,
+        });
+        Cookies.set('currentUser', response.data, { secure: true });
+      } catch {
+        return Promise.reject(error);
+      }
       return axiosInstance(originalRequest);
     }
     return Promise.reject(error);

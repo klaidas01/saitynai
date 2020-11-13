@@ -35,6 +35,7 @@ namespace LibraryAPI.Repositories
                 .Where(b => b.Title.ToLower().Contains(searchTerm.ToLower()) || b.Author.ToLower().Contains(searchTerm.ToLower()))
                 .Skip((page) * rowsPerPage)
                 .Take(rowsPerPage)
+                .Include(b => b.Library)
                 .ToListAsync();
 
             return new ItemsDTO<Book> { items = books, count = count };
@@ -48,6 +49,7 @@ namespace LibraryAPI.Repositories
                 .Where(b => (b.Title.ToLower().Contains(searchTerm.ToLower()) || b.Author.ToLower().Contains(searchTerm.ToLower())) && b.LibraryId == libraryId)
                 .Skip((page) * rowsPerPage)
                 .Take(rowsPerPage)
+                .Include(b => b.Library)
                 .ToListAsync();
 
             return new ItemsDTO<Book> { items = books, count = count };
@@ -67,6 +69,7 @@ namespace LibraryAPI.Repositories
             var book = await _context.Books
                 .Include(b => b.Library)
                 .Where(b => b.Id == id)
+                .Include(b => b.Library)
                 .FirstOrDefaultAsync();
 
             return book;

@@ -7,7 +7,6 @@ import { NavLink } from 'react-router-dom';
 const useStyles = makeStyles(() => ({
   button: {
     color: '#9bceff',
-    //border: '1px solid rgba(90, 161, 167, 0.466)',
     marginLeft: '5%',
   },
 }));

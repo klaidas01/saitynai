@@ -57,7 +57,7 @@ const LibrarySelect = ({ className, setId, libraryId, disabled }) => {
         fullWidth={true}
         maxWidth="sm"
       >
-        <LibraryList onRowClick={(row) => handleRowClick(row)} />
+        <LibraryList onRowClick={(row) => handleRowClick(row)} renderButtons={false} />
       </Dialog>
     </div>
   );

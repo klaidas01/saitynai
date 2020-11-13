@@ -9,6 +9,7 @@ import CancelButton from './../../../common/CancelButton';
 import ConfirmButton from './../../../common/ConfirmButton';
 import { DropzoneArea } from 'material-ui-dropzone';
 import LibrarySelect from './LibrarySelect';
+import { useHistory } from 'react-router-dom';
 
 const bookSchema = yup.object({
   title: yup
@@ -95,6 +96,8 @@ const BookForm = ({
   libraryDisabled,
 }) => {
   const classes = useStyles();
+  const history = useHistory();
+
   return (
     <Paper variant="outlined" className={classes.container}>
       <Typography component="h2" variant="h6" className={classes.header}>
@@ -166,7 +169,7 @@ const BookForm = ({
               <LibrarySelect
                 className={classes.field}
                 setId={(id) => formikProps.setFieldValue('libraryId', id)}
-                libraryId={libraryId}
+                libraryId={+libraryId}
                 disabled={libraryDisabled}
               />
               {formikProps.errors.libraryId && formikProps.touched.libraryId ? (
@@ -196,7 +199,12 @@ const BookForm = ({
               <div className={classes.buttons}>
                 <div className={classes.grow} />
                 <span className={classes.button}>
-                  <CancelButton onClick={formikProps.handleSubmit} text="Cancel" />
+                  <CancelButton
+                    onClick={() => {
+                      history.goBack();
+                    }}
+                    text="Cancel"
+                  />
                 </span>
                 <ConfirmButton onClick={formikProps.handleSubmit} text="Submit" />
               </div>
@@ -211,22 +219,22 @@ const BookForm = ({
 BookForm.propTypes = {
   title: PropTypes.string,
   author: PropTypes.string,
-  pageCount: PropTypes.number,
+  pageCount: PropTypes.string,
   description: PropTypes.string,
   onSubmit: PropTypes.func,
-  libraryId: PropTypes.number,
+  libraryId: PropTypes.string,
   libraryDisabled: PropTypes.bool,
 };
 
 BookForm.defaultProps = {
   title: '',
   author: '',
-  pageCount: undefined,
+  pageCount: '',
   description: '',
   onSubmit: (values) => {
     console.log(values);
   },
-  libraryId: undefined,
+  libraryId: '',
   libraryDisabled: false,
 };
 

@@ -5,13 +5,12 @@ import { ReactComponent as Logo } from './Icons/book.svg';
 import LoginModal from '../auth/LoginModal';
 import RegisterModal from '../auth/RegisterModal';
 import ProtectedComponent from '../../common/ProtectedComponent';
-import { logOut, RoleContext } from '../../services/authService';
+import { logOut, UserContext } from '../../services/authService';
 import Button from '@material-ui/core/Button';
 import { NavLink } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
 import Cookies from 'js-cookie';
 import { useSnackbar } from 'notistack';
-import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(() => ({
   title: {
@@ -55,9 +54,9 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const NavBar = ({ setRole }) => {
+const NavBar = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const role = useContext(RoleContext);
+  const user = useContext(UserContext);
 
   const onLogin = (values) => {
     const postLogin = async (values) => {
@@ -68,7 +67,7 @@ const NavBar = ({ setRole }) => {
         });
         if (!response.data.message) {
           Cookies.set('currentUser', response.data, { secure: true, sameSite: 'Strict' });
-          setRole(response.data.roles[0]);
+          user.setUser(response.data);
           enqueueSnackbar('Login success', {
             anchorOrigin: {
               vertical: 'bottom',
@@ -155,16 +154,16 @@ const NavBar = ({ setRole }) => {
           </Button>
         </div>
         <div className={classes.auth}>
-          <ProtectedComponent roles={['Guest']} role={role}>
+          <ProtectedComponent roles={['Guest']} role={user.role}>
             <LoginModal onSubmit={(values) => onLogin(values)} />
           </ProtectedComponent>
-          <ProtectedComponent roles={['Guest']} role={role}>
+          <ProtectedComponent roles={['Guest']} role={user.role}>
             <RegisterModal onSubmit={(values) => onRegister(values)} />
           </ProtectedComponent>
-          <ProtectedComponent roles={['Administrator', 'Employee', 'User']} role={role}>
+          <ProtectedComponent roles={['Administrator', 'Employee', 'User']} role={user.role}>
             <Button
               variant="text"
-              onClick={() => logOut((r) => setRole(r))}
+              onClick={() => logOut((r) => user.setUser(r))}
               className={classes.navButton}
             >
               Log Out
@@ -174,10 +173,6 @@ const NavBar = ({ setRole }) => {
       </Toolbar>
     </AppBar>
   );
-};
-
-NavBar.propTypes = {
-  setRole: PropTypes.func.isRequired,
 };
 
 export default NavBar;

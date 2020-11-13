@@ -36,19 +36,24 @@ namespace LibraryAPI.Services
         {
             var users = await _userManager
                 .Users
-                .Select(u => new UserDTO { UserName = u.UserName, FirstName = u.FirstName, LastName = u.LastName, Email = u.Email, Id = u.Id})
                 .ToListAsync();
-            return users;
+            List<UserDTO> result = new List<UserDTO>();
+            foreach (ApplicationUser u in users)
+            {
+                var rolesList = await _userManager.GetRolesAsync(u).ConfigureAwait(false);
+                result.Add(new UserDTO { UserName = u.UserName, FirstName = u.FirstName, LastName = u.LastName, Email = u.Email, Id = u.Id, Role = rolesList.FirstOrDefault(), LibraryId = u.LibraryId });
+            }
+            return result;
         }
 
-        public async Task<List<UserDTO>> getUser(string id)
+        public async Task<UserDTO> getUser(string id)
         {
-            var user = await _userManager
+            var u = await _userManager
                 .Users
                 .Where(u => u.Id == id)
-                .Select(u => new UserDTO { UserName = u.UserName, FirstName = u.FirstName, LastName = u.LastName, Email = u.Email, Id = u.Id })
-                .ToListAsync();
-            return user;
+                .FirstOrDefaultAsync();
+            var rolesList = await _userManager.GetRolesAsync(u).ConfigureAwait(false);
+            return new UserDTO { UserName = u.UserName, FirstName = u.FirstName, LastName = u.LastName, Email = u.Email, Id = u.Id, Role = rolesList.FirstOrDefault() };
         }
 
         public async Task<string> Register(RegisterDTO model)
@@ -93,7 +98,8 @@ namespace LibraryAPI.Services
                 authenticationModel.Email = user.Email;
                 authenticationModel.UserName = user.UserName;
                 var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
-                authenticationModel.Roles = rolesList.ToList();
+                authenticationModel.Role = rolesList.ToList().FirstOrDefault();
+                authenticationModel.LibraryId = user.LibraryId;
 
                 var refreshToken = GenerateRefreshToken();
                 user.RefreshToken = refreshToken;
@@ -125,7 +131,7 @@ namespace LibraryAPI.Services
             await _userManager.UpdateAsync(user);
             var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
 
-            return new TokenResponse { Email = user.Email, Roles = rolesList.ToList(), UserName = user.UserName, Token = token, RefreshToken = newRefreshToken};
+            return new TokenResponse { Email = user.Email, Role = rolesList.ToList().FirstOrDefault(), UserName = user.UserName, Token = token, RefreshToken = newRefreshToken};
         }
 
         private async Task<string> CreateJwtToken(ApplicationUser user)
