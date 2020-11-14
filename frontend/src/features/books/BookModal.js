@@ -30,6 +30,7 @@ const useStyles = makeStyles(() => ({
   border: {
     margin: '2%',
     padding: '1%',
+    height: '100%',
   },
   button: {
     display: 'flex',
@@ -45,10 +46,10 @@ const BookModal = ({ book, open, handleClose }) => {
 
   return (
     <div>
-      <Dialog data-testid="dialog" open={open} onClose={handleClose} fullWidth>
+      <Dialog data-testid="dialog" open={open} onClose={handleClose} fullWidth maxWidth="md">
         <DialogTitle className={classes.header}>Book information</DialogTitle>
         <Box border={1} borderColor="grey.400" borderRadius={16} className={classes.border}>
-          <Grid container alignItems="stretch">
+          <Grid container>
             <Grid item className={classes.section1} sm={6}>
               <List>
                 <ListItem>

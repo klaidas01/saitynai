@@ -16,6 +16,7 @@ axiosInstance.interceptors.request.use(
         const token = JSON.parse(currentUser).token;
         config.headers = {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         };
       } catch (e) {
         console.log(e);
@@ -43,7 +44,7 @@ axiosInstance.interceptors.response.use(
           refreshToken: currentUser.refreshToken,
         });
         Cookies.set('currentUser', response.data, { secure: true });
-      } catch {
+      } catch (e) {
         return Promise.reject(error);
       }
       return axiosInstance(originalRequest);

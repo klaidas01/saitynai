@@ -3,6 +3,7 @@ import React from 'react';
 import LibraryList from './../libraries/LibraryList';
 import NewBook from './../books/bookForm/NewBook';
 import BookList from './../books/BookList';
+import NewLibrary from './../libraries/LibraryForm/NewLibrary';
 
 const Routes = () => {
   const history = useHistory();
@@ -21,6 +22,7 @@ const Routes = () => {
       />
       <Route exact path="/books" component={BookList} />
       <Route exact path="/libraries/:libraryId/books" component={BookList} />
+      <Route exact path="/libraries/create" component={NewLibrary} />
       <Route exact path="/books/create" component={NewBook} />
       <Route exact path="/libraries/:libraryId/books/create" component={NewBook} />
       <Redirect to="/libraries" />

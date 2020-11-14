@@ -117,7 +117,7 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
         />
         {renderButtons && (
           <ProtectedComponent role={user.role} roles={['Administrator']}>
-            <NavButton route="/books/create" text="Add new library" />
+            <NavButton route="/libraries/create" text="Add new library" />
           </ProtectedComponent>
         )}
       </div>
