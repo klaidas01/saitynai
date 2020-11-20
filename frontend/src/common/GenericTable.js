@@ -35,6 +35,10 @@ const useStyles = makeStyles(() => ({
   center: {
     marginLeft: '50%',
   },
+  actions: {
+    display: 'inline-block',
+    whiteSpace: 'nowrap',
+  },
 }));
 
 const GenericTable = ({
@@ -47,6 +51,8 @@ const GenericTable = ({
   handleRowsPerPageChange,
   onRowClick,
   isLoading,
+  renderButtons,
+  Buttons,
 }) => {
   const classes = useStyles();
 
@@ -62,16 +68,19 @@ const GenericTable = ({
                   align={column.align}
                   style={{ minWidth: column.minWidth }}
                   className={
-                    index !== 0 && index !== columns.length - 1
-                      ? classes.header
-                      : index === 0
+                    index === 0
                       ? classes.headerFirst
-                      : classes.headerLast
+                      : index === columns.length - 1 && !renderButtons
+                      ? classes.headerLast
+                      : classes.header
                   }
                 >
                   {column.label}
                 </TableCell>
               ))}
+              {renderButtons && (
+                <TableCell className={classes.headerLast} style={{ width: '1px' }}></TableCell>
+              )}
             </TableRow>
             {isLoading && (
               <TableRow>
@@ -86,7 +95,7 @@ const GenericTable = ({
               {items.map((row) => {
                 return (
                   <TableRow
-                    hover
+                    hover={!renderButtons}
                     onClick={() => {
                       onRowClick(row);
                     }}
@@ -103,6 +112,13 @@ const GenericTable = ({
                         </TableCell>
                       );
                     })}
+                    {renderButtons && (
+                      <TableCell>
+                        <div className={classes.actions}>
+                          <Buttons row={row} />
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 );
               })}
@@ -133,6 +149,8 @@ GenericTable.propTypes = {
   handleRowsPerPageChange: PropTypes.func,
   onRowClick: PropTypes.func,
   isLoading: PropTypes.bool,
+  renderButtons: PropTypes.bool,
+  Buttons: PropTypes.func,
 };
 
 GenericTable.defaultProps = {
@@ -145,6 +163,8 @@ GenericTable.defaultProps = {
   handleRowsPerPageChange: () => {},
   onRowClick: () => {},
   isLoading: false,
+  renderButtons: true,
+  Buttons: <div></div>,
 };
 
 export default GenericTable;

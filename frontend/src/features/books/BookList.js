@@ -1,4 +1,4 @@
-import { React, useState, useEffect, useContext, useRef } from 'react';
+import { React, useState, useEffect, useRef, useContext } from 'react';
 import ImageGridList from './ImageGridList';
 import { useSnackbar } from 'notistack';
 import axiosInstance from '../../services/axiosInstance';
@@ -34,8 +34,8 @@ const BookList = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
-  const user = useContext(UserContext);
   const didMount = useRef(false);
+  const user = useContext(UserContext);
 
   const fetchItems = async (page, rowsPerPage, searchTerm) => {
     setIsLoading(true);
@@ -82,7 +82,7 @@ const BookList = (props) => {
       await fetchItems(page, rowsPerPage, searchTerm);
     };
     loadItems();
-  }, []);
+  }, [props.match.params.libraryId]);
 
   useEffect(() => {
     if (didMount.current) {
@@ -115,8 +115,21 @@ const BookList = (props) => {
           }}
         />
         {props.renderButtons && (
-          <ProtectedComponent role={user.role} roles={['Administrator', 'Employee']}>
-            <NavButton route="books/create" text="Add new book" />
+          <ProtectedComponent
+            roles={
+              !props.match.params.libraryId || user.libraryId === +props.match.params.libraryId
+                ? ['Administrator', 'Employee']
+                : ['Administrator']
+            }
+          >
+            {user.role === 'Employee' ? (
+              <NavButton
+                route={'/libraries/' + user.libraryId + '/books/create'}
+                text="Add new book"
+              />
+            ) : (
+              <NavButton route="books/create" text="Add new book" />
+            )}
           </ProtectedComponent>
         )}
       </div>

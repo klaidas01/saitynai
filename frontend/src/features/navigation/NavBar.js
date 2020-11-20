@@ -154,13 +154,13 @@ const NavBar = () => {
           </Button>
         </div>
         <div className={classes.auth}>
-          <ProtectedComponent roles={['Guest']} role={user.role}>
+          <ProtectedComponent roles={['Guest']}>
             <LoginModal onSubmit={(values) => onLogin(values)} />
           </ProtectedComponent>
-          <ProtectedComponent roles={['Guest']} role={user.role}>
+          <ProtectedComponent roles={['Guest']}>
             <RegisterModal onSubmit={(values) => onRegister(values)} />
           </ProtectedComponent>
-          <ProtectedComponent roles={['Administrator', 'Employee', 'User']} role={user.role}>
+          <ProtectedComponent roles={['Administrator', 'Employee', 'User']}>
             <Button
               variant="text"
               onClick={() => logOut((r) => user.setUser(r))}

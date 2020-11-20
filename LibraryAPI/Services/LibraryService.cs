@@ -50,7 +50,7 @@ namespace LibraryAPI.Services
 
         public async Task<int> UpdateLibrary(int id, LibraryDTO library)
         {
-            await _repo.UpdateLibrary(new Library { Id = id, Name = library.Name, Address = library.Address });
+            await _repo.UpdateLibrary(new Library { Id = id, Address = library.Address, Name = library.Name });
             return id;
         }
     }

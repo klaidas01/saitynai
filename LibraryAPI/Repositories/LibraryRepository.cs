@@ -31,6 +31,7 @@ namespace LibraryAPI.Repositories
             var count = _context.Libraries.Count(l => l.Name.ToLower().Contains(searchTerm.ToLower()));
 
             var libraries = await _context.Libraries
+                .OrderBy(l => l.Name)
                 .Where(l => l.Name.ToLower().Contains(searchTerm.ToLower()))
                 .Skip((page) * rowsPerPage)
                 .Take(rowsPerPage)

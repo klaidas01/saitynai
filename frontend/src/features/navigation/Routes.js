@@ -1,30 +1,37 @@
-import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import React from 'react';
 import LibraryList from './../libraries/LibraryList';
 import NewBook from './../books/bookForm/NewBook';
 import BookList from './../books/BookList';
 import NewLibrary from './../libraries/LibraryForm/NewLibrary';
+import EditLibrary from './../libraries/LibraryForm/EditLibrary';
+import ProtectedRoute from './../../common/ProtectedRoute';
 
 const Routes = () => {
-  const history = useHistory();
-
-  const RedirectToLibraryBooks = (row) => {
-    const path = '/libraries/' + row.id + '/books';
-    history.push(path);
-  };
-
   return (
     <Switch>
-      <Route
+      <Route exact path="/libraries" component={LibraryList} />
+      <Route exact path="/libraries/:libraryId/books" component={BookList} />
+      <ProtectedRoute
         exact
-        path="/libraries"
-        render={() => <LibraryList onRowClick={(row) => RedirectToLibraryBooks(row)} />}
+        path="/libraries/create"
+        component={NewLibrary}
+        roles={['Administrator']}
+      />
+      <ProtectedRoute
+        exact
+        path="/libraries/:libraryId/edit"
+        component={EditLibrary}
+        roles={['Administrator']}
       />
       <Route exact path="/books" component={BookList} />
-      <Route exact path="/libraries/:libraryId/books" component={BookList} />
-      <Route exact path="/libraries/create" component={NewLibrary} />
-      <Route exact path="/books/create" component={NewBook} />
-      <Route exact path="/libraries/:libraryId/books/create" component={NewBook} />
+      <ProtectedRoute exact path="/books/create" component={NewBook} roles={['Administrator']} />
+      <ProtectedRoute
+        exact
+        path="/libraries/:libraryId/books/create"
+        component={NewBook}
+        roles={['Administrator', 'Employee']}
+      />
       <Redirect to="/libraries" />
     </Switch>
   );

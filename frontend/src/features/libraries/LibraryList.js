@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import GenericTable from './../../common/GenericTable';
 import TextField from '@material-ui/core/TextField';
 import axiosInstance from './../../services/axiosInstance';
@@ -9,7 +9,11 @@ import { IconButton, InputAdornment, Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import NavButton from './../../common/NavButton';
 import ProtectedComponent from './../../common/ProtectedComponent';
-import { UserContext } from '../../services/authService';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { useHistory } from 'react-router-dom';
+import GenericModal from '../../common/GenericModal';
 
 const useStyles = makeStyles(() => ({
   search: {
@@ -34,13 +38,83 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
-  const user = useContext(UserContext);
   const didMount = useRef(false);
 
   const columns = [
     { id: 'name', label: 'Name', minWidth: 170 },
     { id: 'address', label: 'Address', minWidth: 170 },
   ];
+
+  const Buttons = ({ row }) => {
+    const history = useHistory();
+    const [open, setOpen] = useState(false);
+
+    const remove = async (row) => {
+      setIsLoading(true);
+      try {
+        await axiosInstance.delete('libraries/' + row.id);
+        await fetchItems(
+          items.length !== 1 || count === 1 ? page : page - 1,
+          rowsPerPage,
+          searchTerm
+        );
+      } catch (e) {
+        enqueueSnackbar('Something went wrong', {
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+          variant: 'error',
+        });
+      }
+      enqueueSnackbar('Library deleted', {
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+        variant: 'success',
+      });
+      setIsLoading(false);
+    };
+
+    return (
+      <>
+        <IconButton
+          onClick={() => {
+            history.push('/libraries/' + row.id + '/books');
+          }}
+        >
+          <MenuBookIcon />
+        </IconButton>
+        <ProtectedComponent roles={['Administrator']}>
+          <IconButton
+            onClick={() => {
+              history.push('/libraries/' + row.id + '/edit');
+            }}
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => setOpen(true)}>
+            <DeleteIcon />
+          </IconButton>
+          <GenericModal
+            isOpen={open}
+            title="Delete library"
+            description="Are you sure you want to delete this library?"
+            acceptName="Delete"
+            declineName="Cancel"
+            handleDecline={() => setOpen(false)}
+            handleClose={() => setOpen(false)}
+            handleAccept={async () => await remove(row)}
+          />
+        </ProtectedComponent>
+      </>
+    );
+  };
+
+  Buttons.propTypes = {
+    row: PropTypes.object.isRequired,
+  };
 
   const fetchItems = async (page, rowsPerPage, searchTerm) => {
     setIsLoading(true);
@@ -116,7 +190,7 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
           }}
         />
         {renderButtons && (
-          <ProtectedComponent role={user.role} roles={['Administrator']}>
+          <ProtectedComponent roles={['Administrator']}>
             <NavButton route="/libraries/create" text="Add new library" />
           </ProtectedComponent>
         )}
@@ -131,6 +205,8 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
         handleRowsPerPageChange={handleRowsPerPageChange}
         onRowClick={onRowClick}
         isLoading={isLoading}
+        renderButtons={renderButtons}
+        Buttons={Buttons}
       />
     </Paper>
   );
