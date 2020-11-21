@@ -2,6 +2,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import React from 'react';
 import LibraryList from './../libraries/LibraryList';
 import NewBook from './../books/bookForm/NewBook';
+import EditBook from './../books/bookForm/EditBook';
 import BookList from './../books/BookList';
 import NewLibrary from './../libraries/LibraryForm/NewLibrary';
 import EditLibrary from './../libraries/LibraryForm/EditLibrary';
@@ -30,6 +31,12 @@ const Routes = () => {
         exact
         path="/libraries/:libraryId/books/create"
         component={NewBook}
+        roles={['Administrator', 'Employee']}
+      />
+      <ProtectedRoute
+        exact
+        path="/books/:bookId/edit"
+        component={EditBook}
         roles={['Administrator', 'Employee']}
       />
       <Redirect to="/libraries" />

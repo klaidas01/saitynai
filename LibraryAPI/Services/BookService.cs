@@ -107,6 +107,7 @@ namespace LibraryAPI.Services
                 if (user.LibraryId != oldBook.LibraryId || user.LibraryId != book.LibraryId)
                     throw new UnauthorizedAccessException();
             }
+            var byteStream = (book.coverImage != null) ? await GetBytes(book.coverImage) : null;
             await _repo.UpdateBook(new Book
             {
                 Id = id,
@@ -115,7 +116,8 @@ namespace LibraryAPI.Services
                 PageCount = (int)book.PageCount,
                 Description = book.Description,
                 LibraryId = book.LibraryId,
-                IsReserved = book.IsReserved
+                IsReserved = book.IsReserved,
+                CoverImage = byteStream
             });
             return id;
         }

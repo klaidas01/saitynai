@@ -10,6 +10,7 @@ import ConfirmButton from './../../../common/ConfirmButton';
 import { DropzoneArea } from 'material-ui-dropzone';
 import LibrarySelect from './LibrarySelect';
 import { useHistory } from 'react-router-dom';
+import { b64toFile } from './../../../services/helperFunctions';
 
 const bookSchema = yup.object({
   title: yup
@@ -92,6 +93,7 @@ const BookForm = ({
   pageCount,
   description,
   libraryId,
+  coverImage,
   onSubmit,
   libraryDisabled,
 }) => {
@@ -110,7 +112,7 @@ const BookForm = ({
           pageCount: pageCount,
           description: description,
           libraryId: libraryId,
-          coverImage: undefined,
+          coverImage: coverImage,
         }}
         validationSchema={bookSchema}
         onSubmit={(values) => {
@@ -192,6 +194,11 @@ const BookForm = ({
                 dropzoneText={'Upload book cover image'}
                 filesLimit={1}
                 onChange={(files) => formikProps.setFieldValue('coverImage', files[0])}
+                initialFiles={
+                  formikProps.values.coverImage && !(formikProps.values.coverImage instanceof Blob)
+                    ? [b64toFile(formikProps.values.coverImage, 'Cover Image', 'image/jpeg')]
+                    : []
+                }
                 showAlerts={false}
               />
             </Grid>
@@ -224,6 +231,7 @@ BookForm.propTypes = {
   onSubmit: PropTypes.func,
   libraryId: PropTypes.string,
   libraryDisabled: PropTypes.bool,
+  coverImage: PropTypes.string,
 };
 
 BookForm.defaultProps = {
@@ -231,6 +239,7 @@ BookForm.defaultProps = {
   author: '',
   pageCount: '',
   description: '',
+  coverImage: '',
   onSubmit: (values) => {
     console.log(values);
   },

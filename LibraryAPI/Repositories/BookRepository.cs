@@ -32,6 +32,7 @@ namespace LibraryAPI.Repositories
             var count = _context.Books.Count(b => b.Title.ToLower().Contains(searchTerm.ToLower()) || b.Author.ToLower().Contains(searchTerm.ToLower()));
 
             var books = await _context.Books
+                .OrderBy(b => b.Title)
                 .Where(b => b.Title.ToLower().Contains(searchTerm.ToLower()) || b.Author.ToLower().Contains(searchTerm.ToLower()))
                 .Skip((page) * rowsPerPage)
                 .Take(rowsPerPage)
@@ -46,6 +47,7 @@ namespace LibraryAPI.Repositories
             var count = _context.Books.Count(b => b.LibraryId == libraryId && (b.Title.ToLower().Contains(searchTerm.ToLower()) || b.Author.ToLower().Contains(searchTerm.ToLower())));
 
             var books = await _context.Books
+                .OrderBy(b => b.Title)
                 .Where(b => (b.Title.ToLower().Contains(searchTerm.ToLower()) || b.Author.ToLower().Contains(searchTerm.ToLower())) && b.LibraryId == libraryId)
                 .Skip((page) * rowsPerPage)
                 .Take(rowsPerPage)

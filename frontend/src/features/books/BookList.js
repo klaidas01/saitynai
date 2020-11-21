@@ -68,6 +68,34 @@ const BookList = (props) => {
     setIsLoading(false);
   };
 
+  const remove = async (item) => {
+    setIsLoading(true);
+    try {
+      await axiosInstance.delete('books/' + item.id);
+      await fetchItems(
+        items.length !== 1 || count === 1 ? page : page - 1,
+        rowsPerPage,
+        searchTerm
+      );
+    } catch (e) {
+      enqueueSnackbar('Something went wrong', {
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+        variant: 'error',
+      });
+    }
+    enqueueSnackbar('Book deleted', {
+      anchorOrigin: {
+        vertical: 'bottom',
+        horizontal: 'center',
+      },
+      variant: 'success',
+    });
+    setIsLoading(false);
+  };
+
   const handlePageChange = async (event, newPage) => {
     await fetchItems(newPage, rowsPerPage, searchTerm);
     setPage(newPage);
@@ -140,6 +168,7 @@ const BookList = (props) => {
         rowsPerPage={rowsPerPage}
         handlePageChange={handlePageChange}
         handleRowsPerPageChange={handleRowsPerPageChange}
+        handleRemoveBook={remove}
         isLoading={isLoading}
       ></ImageGridList>
     </Paper>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   Typography,
   GridList,
@@ -14,9 +14,15 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import defaultCover from './Images/CoverNotAvailable.jpg';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import BookModal from './BookModal';
+import ProtectedComponent from '../../common/ProtectedComponent';
+import { UserContext } from '../../services/authService';
+import GenericModal from './../../common/GenericModal';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles(() => ({
   header: {
@@ -58,6 +64,7 @@ const ImageGridList = ({
   count,
   handlePageChange,
   handleRowsPerPageChange,
+  handleRemoveBook,
   isLoading,
 }) => {
   const classes = useStyles();
@@ -65,6 +72,9 @@ const ImageGridList = ({
   const mediumBreakpoint = useMediaQuery(theme.breakpoints.up('md'));
   const [open, setOpen] = useState(false);
   const [book, setBook] = useState({ library: {} });
+  const user = useContext(UserContext);
+  const [openDelete, setOpenDelete] = useState(false);
+  const history = useHistory();
 
   const onBookClick = (item) => {
     setBook(item);
@@ -90,6 +100,38 @@ const ImageGridList = ({
                   alt={tile.title}
                   className={mediumBreakpoint ? classes.cover : classes.coverMd}
                 />
+                <ProtectedComponent
+                  roles={
+                    user.role === 'Employee' && tile.libraryId === user.libraryId
+                      ? ['Administrator', 'Employee']
+                      : ['Administrator']
+                  }
+                >
+                  <GridListTileBar
+                    titlePosition="top"
+                    actionIcon={
+                      <>
+                        <IconButton
+                          className={classes.button}
+                          onClick={() => {
+                            history.push('/books/' + tile.id + '/edit');
+                          }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          className={classes.button}
+                          onClick={() => {
+                            setBook(tile);
+                            setOpenDelete(true);
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </>
+                    }
+                  />
+                </ProtectedComponent>
                 <GridListTileBar
                   title={tile.title}
                   subtitle={<span>by: {tile.author}</span>}
@@ -120,6 +162,19 @@ const ImageGridList = ({
           onChangeRowsPerPage={handleRowsPerPageChange}
         />
       </div>
+      <GenericModal
+        isOpen={openDelete}
+        title="Delete book"
+        description="Are you sure you want to delete this book?"
+        acceptName="Delete"
+        declineName="Cancel"
+        handleDecline={() => setOpenDelete(false)}
+        handleClose={() => setOpenDelete(false)}
+        handleAccept={async () => {
+          setOpenDelete(false);
+          await handleRemoveBook(book);
+        }}
+      />
     </Box>
   );
 };
@@ -132,6 +187,7 @@ ImageGridList.propTypes = {
   handlePageChange: PropTypes.func,
   handleRowsPerPageChange: PropTypes.func,
   isLoading: PropTypes.bool,
+  handleRemoveBook: PropTypes.func,
 };
 
 ImageGridList.defaultProps = {
@@ -141,6 +197,7 @@ ImageGridList.defaultProps = {
   count: 0,
   handlePageChange: () => {},
   handleRowsPerPageChange: () => {},
+  handleRemoveBook: () => {},
   isLoading: false,
 };
 

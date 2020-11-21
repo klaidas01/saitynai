@@ -48,7 +48,7 @@ namespace LibraryAPI.Controllers
         // PUT: api/Books/5
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator,Employee")]
-        public async Task<IActionResult> PutBook(int id, BookDTO book)
+        public async Task<IActionResult> PutBook(int id, [FromForm]BookDTO book)
         {
             try
             {
