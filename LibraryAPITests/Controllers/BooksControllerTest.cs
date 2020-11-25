@@ -28,7 +28,7 @@ namespace LibraryAPITests.ControllerUnitTests
         public void GetBooks_WhenCalled_ReturnsOkResult()
         {
             // Act
-            var okResult = controller.GetBooks();
+            var okResult = controller.GetBooks(new SliceDTO());
 
             // Assert
             Assert.IsType<OkObjectResult>(okResult.Result.Result);
@@ -38,7 +38,7 @@ namespace LibraryAPITests.ControllerUnitTests
         public void GetBooks_WhenCalled_ReturnsAllBooks()
         {
             // Act
-            var okResult = controller.GetBooks().Result.Result as OkObjectResult;
+            var okResult = controller.GetBooks(new SliceDTO()).Result.Result as OkObjectResult;
 
             // Assert
             var items = Assert.IsType<List<Book>>(okResult.Value);

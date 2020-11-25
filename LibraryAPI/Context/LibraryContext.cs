@@ -35,8 +35,6 @@ namespace LibraryAPI.Context
                 .HasOne(r => r.User)
                 .WithMany()
                 .HasForeignKey(r => r.UserId);
-            modelBuilder.Entity<Reservation>()
-                .Ignore(r => r.User);
 
             modelBuilder.Entity<ApplicationUser>()
                 .HasOne(u => u.Library)

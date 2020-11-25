@@ -1,7 +1,9 @@
 ﻿using LibraryAPI.Context;
+using LibraryAPI.DTO;
 using LibraryAPI.Models;
 using LibraryAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,6 +28,22 @@ namespace LibraryAPI.Repositories
             return reservations;
         }
 
+        public async Task<ItemsDTO<ReservationResponse>> GetSlice(int page, int rowsPerPage, string searchTerm)
+        {
+            var count = _context.Reservations.Count(r => r.User.UserName.ToLower().Contains(searchTerm.ToLower()));
+            var reservations = await _context.Reservations
+                .OrderBy(r => r.StartDate)
+                .Where(r => r.User.UserName.ToLower().Contains(searchTerm.ToLower()))
+                .Skip((page) * rowsPerPage)
+                .Take(rowsPerPage)
+                .Select(r => (!r.IsReturned && r.ReturnDate < DateTime.Now) 
+                    ? new ReservationResponse { Id = r.Id, StartDate = r.StartDate, ReturnDate = r.ReturnDate, State = "Late", LateFee = Math.Ceiling((DateTime.Now - r.ReturnDate).TotalDays) * r.Book.LateFee, LibraryId = r.Book.LibraryId, LibraryName = r.Book.Library.Name, BookName = r.Book.Title, UserName = r.User.UserName } 
+                    : new ReservationResponse { Id = r.Id, StartDate = r.StartDate, ReturnDate = r.ReturnDate, State = r.IsReturned ? "Returned" : "Ongoing", LateFee = null, LibraryId = r.Book.LibraryId, LibraryName = r.Book.Library.Name, BookName = r.Book.Title, UserName = r.User.UserName })
+                .ToListAsync();
+
+            return new ItemsDTO<ReservationResponse> { items = reservations, count = count };
+        }
+
         public async Task<List<Reservation>> GetUserReservations(string uid)
         {
             var reservations = await _context.Reservations
@@ -46,11 +64,28 @@ namespace LibraryAPI.Repositories
             return reservations;
         }
 
-        public async Task<Reservation> GetReservation(int id)
+        public async Task<ItemsDTO<ReservationResponse>> GetLibrarySlice(int? libraryId, int page, int rowsPerPage, string searchTerm)
+        {
+            var count = _context.Reservations.Count(r => r.User.UserName.ToLower().Contains(searchTerm.ToLower()) && r.Book.LibraryId == libraryId);
+            var reservations = await _context.Reservations
+                .OrderBy(r => r.StartDate)
+                .Where(r => r.User.UserName.ToLower().Contains(searchTerm.ToLower()) && r.Book.LibraryId == libraryId)
+                .Skip((page) * rowsPerPage)
+                .Take(rowsPerPage)
+                .Select(r => (!r.IsReturned && r.ReturnDate < DateTime.Now)
+                    ? new ReservationResponse { Id = r.Id, StartDate = r.StartDate, ReturnDate = r.ReturnDate, State = "Late", LateFee = Math.Ceiling((DateTime.Now - r.ReturnDate).TotalDays) * r.Book.LateFee, LibraryId = r.Book.LibraryId, LibraryName = r.Book.Library.Name, BookName = r.Book.Title, UserName = r.User.UserName }
+                    : new ReservationResponse { Id = r.Id, StartDate = r.StartDate, ReturnDate = r.ReturnDate, State = r.IsReturned ? "Returned" : "Ongoing", LateFee = null, LibraryId = r.Book.LibraryId, LibraryName = r.Book.Library.Name, BookName = r.Book.Title, UserName = r.User.UserName })
+                .ToListAsync();
+
+            return new ItemsDTO<ReservationResponse> { items = reservations, count = count };
+        }
+
+        public async Task<SingleReservationResponse> GetReservation(int id)
         {
             var reservation = await _context.Reservations
                 .Include(r => r.Book)
                 .Where(r => r.Id == id)
+                .Select(r => new SingleReservationResponse { reservation = r, UserName = r.User.UserName })
                 .FirstOrDefaultAsync();
 
             return reservation;

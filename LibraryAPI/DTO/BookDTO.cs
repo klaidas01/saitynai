@@ -16,6 +16,9 @@ namespace LibraryAPI.DTO
         public string Author { get; set; }
 
         [Required]
+        public double? LateFee { get; set; }
+
+        [Required]
         [Range(1, Double.PositiveInfinity,
         ErrorMessage = "Value for {0} must be more than 0")]
         public int? PageCount { get; set; }
@@ -23,10 +26,10 @@ namespace LibraryAPI.DTO
         [Required]
         public string Description { get; set; }
 
-        public bool IsReserved { get; set; }
-
         [Required]
-        public int LibraryId { get; set; }
+        public int? LibraryId { get; set; }
+
+        public bool IsReserved { get; set; }
 
         public IFormFile coverImage { get; set; }
     }

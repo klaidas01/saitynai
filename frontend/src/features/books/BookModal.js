@@ -101,6 +101,36 @@ const BookModal = ({ book, open, handleClose }) => {
                 </ListItem>
               </List>
             </Grid>
+            <Grid item className={classes.section1} sm={6}>
+              <List>
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <CreateIcon />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={
+                      'Late fee per day: ' + (book.lateFee ? book.lateFee.toFixed(2) : '0.00') + '€'
+                    }
+                  />
+                </ListItem>
+              </List>
+            </Grid>
+            <Grid item className={classes.section2} sm={6}>
+              <List>
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>{book.isReserved ? <CancelIcon /> : <CheckCircleIcon />}</Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={
+                      book.isReserved ? 'This book is currently taken.' : 'This book is available'
+                    }
+                  />
+                </ListItem>
+              </List>
+            </Grid>
             <Grid item sm={12}>
               <ListItem>
                 <ListItemAvatar>
@@ -109,16 +139,6 @@ const BookModal = ({ book, open, handleClose }) => {
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText primary={'Description: ' + book.description} />
-              </ListItem>
-              <ListItem>
-                <ListItemAvatar>
-                  <Avatar>{book.isReserved ? <CancelIcon /> : <CheckCircleIcon />}</Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={
-                    book.isReserved ? 'This book is currently taken.' : 'This book is available'
-                  }
-                />
               </ListItem>
             </Grid>
           </Grid>

@@ -71,6 +71,7 @@ namespace LibraryAPI.Services
                 PageCount = (int)book.PageCount,
                 Description = book.Description,
                 LibraryId = book.LibraryId,
+                LateFee = book.LateFee,
                 IsReserved = false,
                 CoverImage = byteStream
             });
@@ -115,6 +116,7 @@ namespace LibraryAPI.Services
                 Author = book.Author,
                 PageCount = (int)book.PageCount,
                 Description = book.Description,
+                LateFee = book.LateFee,
                 LibraryId = book.LibraryId,
                 IsReserved = book.IsReserved,
                 CoverImage = byteStream

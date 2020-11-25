@@ -9,12 +9,12 @@ import { IconButton, InputAdornment, Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import NavButton from './../../common/NavButton';
 import ProtectedComponent from './../../common/ProtectedComponent';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useHistory } from 'react-router-dom';
 import GenericModal from '../../common/GenericModal';
-import { UserContext, logOut } from '../../services/authService';
+import { logOut, UserContext } from './../../services/authService';
+import StateCell from './StateCell';
 
 const useStyles = makeStyles(() => ({
   search: {
@@ -30,7 +30,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const LibraryList = ({ onRowClick, renderButtons }) => {
+const ReservationList = ({ onRowClick, renderButtons }) => {
   const [items, setItems] = useState([]);
   const [count, setCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
@@ -41,10 +41,27 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
   const classes = useStyles();
   const didMount = useRef(false);
   const user = useContext(UserContext);
+  const history = useHistory();
 
   const columns = [
-    { id: 'name', label: 'Name', minWidth: 170 },
-    { id: 'address', label: 'Address', minWidth: 170 },
+    { id: 'userName', label: 'Username' },
+    {
+      id: 'startDate',
+      label: 'Start date',
+      format: (value) => new Date(value).toLocaleDateString(),
+    },
+    {
+      id: 'returnDate',
+      label: 'Return date',
+      format: (value) => new Date(value).toLocaleDateString(),
+    },
+    { id: 'state', label: 'Reservation state', Component: StateCell, align: 'center' },
+    {
+      id: 'lateFee',
+      label: 'Late fee',
+      format: (value) => (value ? value.toFixed(2) + '€' : '-'),
+      align: 'center',
+    },
   ];
 
   const Buttons = ({ row }) => {
@@ -54,7 +71,7 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
     const remove = async (row) => {
       setIsLoading(true);
       try {
-        await axiosInstance.delete('libraries/' + row.id);
+        await axiosInstance.delete('reservations/' + row.id);
         await fetchItems(
           items.length !== 1 || count === 1 ? page : page - 1,
           rowsPerPage,
@@ -70,13 +87,14 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
         });
         if (e.response && e.response.status === 401);
         {
+          console.log('yes!');
           history.push('/libraries');
           if (user.role !== 'Guest') {
             logOut(user.setUser);
           }
         }
       }
-      enqueueSnackbar('Library deleted', {
+      enqueueSnackbar('Reservation deleted', {
         anchorOrigin: {
           vertical: 'bottom',
           horizontal: 'center',
@@ -88,14 +106,7 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
 
     return (
       <>
-        <IconButton
-          onClick={() => {
-            history.push('/libraries/' + row.id + '/books');
-          }}
-        >
-          <MenuBookIcon />
-        </IconButton>
-        <ProtectedComponent roles={['Administrator']}>
+        <ProtectedComponent roles={['Administrator', 'Employee']}>
           <IconButton
             onClick={() => {
               history.push('/libraries/' + row.id + '/edit');
@@ -108,8 +119,8 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
           </IconButton>
           <GenericModal
             isOpen={open}
-            title="Delete library"
-            description="Are you sure you want to delete this library?"
+            title="Delete reservation"
+            description="Are you sure you want to delete this reservation?"
             acceptName="Delete"
             declineName="Cancel"
             handleDecline={() => setOpen(false)}
@@ -128,7 +139,7 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
   const fetchItems = async (page, rowsPerPage, searchTerm) => {
     setIsLoading(true);
     try {
-      const response = await axiosInstance.get('libraries', {
+      const response = await axiosInstance.get('reservations', {
         params: {
           Page: page,
           RowsPerPage: rowsPerPage,
@@ -140,13 +151,20 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
       setRowsPerPage(rowsPerPage);
       setPage(page);
     } catch (e) {
-      enqueueSnackbar('Could not get libraries', {
+      enqueueSnackbar('Could not get reservations', {
         anchorOrigin: {
           vertical: 'bottom',
           horizontal: 'center',
         },
         variant: 'error',
       });
+      if (e.response && e.response.status === 401);
+      {
+        history.push('/libraries');
+        if (user.role !== 'Guest') {
+          logOut(user.setUser);
+        }
+      }
     }
     setIsLoading(false);
   };
@@ -200,7 +218,7 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
         />
         {renderButtons && (
           <ProtectedComponent roles={['Administrator']}>
-            <NavButton route="/libraries/create" text="Add new library" />
+            <NavButton route="/reservations/create" text="Add new reservation" />
           </ProtectedComponent>
         )}
       </div>
@@ -221,14 +239,14 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
   );
 };
 
-LibraryList.propTypes = {
+ReservationList.propTypes = {
   onRowClick: PropTypes.func,
   renderButtons: PropTypes.bool,
 };
 
-LibraryList.defaultProps = {
+ReservationList.defaultProps = {
   onRowClick: () => {},
   renderButtons: true,
 };
 
-export default LibraryList;
+export default ReservationList;

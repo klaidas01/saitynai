@@ -24,10 +24,10 @@ namespace LibraryAPI.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Administrator,Employee")]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers([FromQuery] SliceDTO slice)
         {
-            var books = await _userService.getUsers();
-            return Ok(books);
+            var users = await _userService.getUsers(slice.Page, slice.RowsPerPage, (slice.SearchTerm != null) ? slice.SearchTerm : "");
+            return Ok(users);
         }
 
         [HttpGet("{id}")]

@@ -7,14 +7,8 @@ import { useSnackbar } from 'notistack';
 import SearchIcon from '@material-ui/icons/Search';
 import { IconButton, InputAdornment, Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import NavButton from './../../common/NavButton';
-import ProtectedComponent from './../../common/ProtectedComponent';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { useHistory } from 'react-router-dom';
-import GenericModal from '../../common/GenericModal';
-import { UserContext, logOut } from '../../services/authService';
+import { logOut, UserContext } from './../../services/authService';
 
 const useStyles = makeStyles(() => ({
   search: {
@@ -30,7 +24,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const LibraryList = ({ onRowClick, renderButtons }) => {
+const Populatedtable = ({ onRowClick, columns, path }) => {
   const [items, setItems] = useState([]);
   const [count, setCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
@@ -40,95 +34,13 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const didMount = useRef(false);
+  const history = useHistory();
   const user = useContext(UserContext);
-
-  const columns = [
-    { id: 'name', label: 'Name', minWidth: 170 },
-    { id: 'address', label: 'Address', minWidth: 170 },
-  ];
-
-  const Buttons = ({ row }) => {
-    const history = useHistory();
-    const [open, setOpen] = useState(false);
-
-    const remove = async (row) => {
-      setIsLoading(true);
-      try {
-        await axiosInstance.delete('libraries/' + row.id);
-        await fetchItems(
-          items.length !== 1 || count === 1 ? page : page - 1,
-          rowsPerPage,
-          searchTerm
-        );
-      } catch (e) {
-        enqueueSnackbar('Something went wrong', {
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-          variant: 'error',
-        });
-        if (e.response && e.response.status === 401);
-        {
-          history.push('/libraries');
-          if (user.role !== 'Guest') {
-            logOut(user.setUser);
-          }
-        }
-      }
-      enqueueSnackbar('Library deleted', {
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'center',
-        },
-        variant: 'success',
-      });
-      setIsLoading(false);
-    };
-
-    return (
-      <>
-        <IconButton
-          onClick={() => {
-            history.push('/libraries/' + row.id + '/books');
-          }}
-        >
-          <MenuBookIcon />
-        </IconButton>
-        <ProtectedComponent roles={['Administrator']}>
-          <IconButton
-            onClick={() => {
-              history.push('/libraries/' + row.id + '/edit');
-            }}
-          >
-            <EditIcon />
-          </IconButton>
-          <IconButton onClick={() => setOpen(true)}>
-            <DeleteIcon />
-          </IconButton>
-          <GenericModal
-            isOpen={open}
-            title="Delete library"
-            description="Are you sure you want to delete this library?"
-            acceptName="Delete"
-            declineName="Cancel"
-            handleDecline={() => setOpen(false)}
-            handleClose={() => setOpen(false)}
-            handleAccept={async () => await remove(row)}
-          />
-        </ProtectedComponent>
-      </>
-    );
-  };
-
-  Buttons.propTypes = {
-    row: PropTypes.object.isRequired,
-  };
 
   const fetchItems = async (page, rowsPerPage, searchTerm) => {
     setIsLoading(true);
     try {
-      const response = await axiosInstance.get('libraries', {
+      const response = await axiosInstance.get(path, {
         params: {
           Page: page,
           RowsPerPage: rowsPerPage,
@@ -140,13 +52,20 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
       setRowsPerPage(rowsPerPage);
       setPage(page);
     } catch (e) {
-      enqueueSnackbar('Could not get libraries', {
+      enqueueSnackbar('Could not get ' + path, {
         anchorOrigin: {
           vertical: 'bottom',
           horizontal: 'center',
         },
         variant: 'error',
       });
+      if (e.response && e.response.status === 401);
+      {
+        history.push('/libraries');
+        if (user.role !== 'Guest') {
+          logOut(user.setUser);
+        }
+      }
     }
     setIsLoading(false);
   };
@@ -198,11 +117,6 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
             ),
           }}
         />
-        {renderButtons && (
-          <ProtectedComponent roles={['Administrator']}>
-            <NavButton route="/libraries/create" text="Add new library" />
-          </ProtectedComponent>
-        )}
       </div>
       <GenericTable
         columns={columns}
@@ -214,21 +128,20 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
         handleRowsPerPageChange={handleRowsPerPageChange}
         onRowClick={onRowClick}
         isLoading={isLoading}
-        renderButtons={renderButtons}
-        Buttons={Buttons}
+        renderButtons={false}
       />
     </Paper>
   );
 };
 
-LibraryList.propTypes = {
+Populatedtable.propTypes = {
   onRowClick: PropTypes.func,
-  renderButtons: PropTypes.bool,
+  columns: PropTypes.array.isRequired,
+  path: PropTypes.string.isRequired,
 };
 
-LibraryList.defaultProps = {
+Populatedtable.defaultProps = {
   onRowClick: () => {},
-  renderButtons: true,
 };
 
-export default LibraryList;
+export default Populatedtable;

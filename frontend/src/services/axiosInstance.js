@@ -33,10 +33,10 @@ axiosInstance.interceptors.response.use(
   (response) => {
     return response;
   },
-  async function (error) {
+  async (error) => {
     const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+    if (error.response.status === 401 && !originalRequest.retry) {
+      originalRequest.retry = true;
       try {
         const currentUser = JSON.parse(Cookies.get('currentUser'));
         const response = await axiosInstance.post('users/refresh', {

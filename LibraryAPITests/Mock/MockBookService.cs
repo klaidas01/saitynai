@@ -46,6 +46,16 @@ namespace LibraryAPITests.Mock
             return Task.FromResult(repo.Where(b => b.LibraryId == libraryId).ToList());
         }
 
+        public Task<ItemsDTO<Book>> GetLibrarySlice(int page, int rowsPerPage, int libraryId, string searchTerm = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ItemsDTO<Book>> GetSlice(int page, int rowsPerPage, string searchTerm = "")
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<int> PostBook(BookDTO book, ClaimsPrincipal u)
         {
             var newBook = new Book
@@ -83,5 +93,6 @@ namespace LibraryAPITests.Mock
 
             return Task.FromResult(id);
         }
+
     }
 }

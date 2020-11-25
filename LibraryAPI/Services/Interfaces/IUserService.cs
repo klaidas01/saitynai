@@ -9,7 +9,7 @@ namespace LibraryAPI.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<List<UserDTO>> getUsers();
+        Task<ItemsDTO<UserDTO>> getUsers(int page, int rowsPerPage, string searchTerm);
         Task<UserDTO> getUser(string id);
         Task<string> Register(RegisterDTO model);
         Task<TokenResponse> GetTokenAsync(TokenDTO model);

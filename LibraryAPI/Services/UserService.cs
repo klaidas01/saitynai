@@ -32,10 +32,16 @@ namespace LibraryAPI.Services
             _libraryRepo = libraryRepo;
         }
 
-        public async Task<List<UserDTO>> getUsers()
+        public async Task<ItemsDTO<UserDTO>> getUsers(int page, int rowsPerPage, string searchTerm)
         {
+            var count = _userManager.Users.Count(u => u.UserName.ToLower().Contains(searchTerm.ToLower()) || u.FirstName.ToLower().Contains(searchTerm.ToLower()) || u.LastName.ToLower().Contains(searchTerm.ToLower()));
+
             var users = await _userManager
                 .Users
+                .OrderBy(u => u.UserName)
+                .Where(u => u.UserName.ToLower().Contains(searchTerm.ToLower()) || u.FirstName.ToLower().Contains(searchTerm.ToLower()) || u.LastName.ToLower().Contains(searchTerm.ToLower()))
+                .Skip((page) * rowsPerPage)
+                .Take(rowsPerPage)
                 .ToListAsync();
             List<UserDTO> result = new List<UserDTO>();
             foreach (ApplicationUser u in users)
@@ -43,7 +49,7 @@ namespace LibraryAPI.Services
                 var rolesList = await _userManager.GetRolesAsync(u).ConfigureAwait(false);
                 result.Add(new UserDTO { UserName = u.UserName, FirstName = u.FirstName, LastName = u.LastName, Email = u.Email, Id = u.Id, Role = rolesList.FirstOrDefault(), LibraryId = u.LibraryId });
             }
-            return result;
+            return new ItemsDTO<UserDTO> { items = result, count = count };
         }
 
         public async Task<UserDTO> getUser(string id)

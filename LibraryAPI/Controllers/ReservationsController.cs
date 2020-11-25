@@ -26,12 +26,12 @@ namespace LibraryAPI.Controllers
 
         // GET: api/Reservations
         [HttpGet]
-        [Authorize]
-        public async Task<ActionResult<IEnumerable<Reservation>>> GetReservations()
+        [Authorize(Roles = "Administrator,Employee")]
+        public async Task<ActionResult<ItemsDTO<Reservation>>> GetReservations([FromQuery] SliceDTO slice)
         {
             var role = this.User.FindFirst(ClaimTypes.Role).Value;
             var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var reservations = await _reservationService.GetReservations(userName, role);
+            var reservations = await _reservationService.GetReservations(userName, role, slice.Page, slice.RowsPerPage, (slice.SearchTerm != null) ? slice.SearchTerm : "");
             return Ok(reservations);
         }
 

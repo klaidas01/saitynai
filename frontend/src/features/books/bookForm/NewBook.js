@@ -30,6 +30,7 @@ const NewBook = (props) => {
       formData.append('author', values.author);
       formData.append('pageCount', values.pageCount);
       formData.append('description', values.description);
+      formData.append('lateFee', values.lateFee);
       formData.append('libraryId', values.libraryId);
       formData.append('coverImage', values.coverImage ? values.coverImage : null);
 

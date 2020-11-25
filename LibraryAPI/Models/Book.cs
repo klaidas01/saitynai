@@ -14,8 +14,9 @@ namespace LibraryAPI.Models
         public string Description { get; set; }
         public Boolean IsReserved { get; set; }
         public byte[] CoverImage { get; set; }
+        public double? LateFee { get; set; }
 
-        public int LibraryId { get; set; }
+        public int? LibraryId { get; set; }
         public Library Library { get; set; }
     }
 }

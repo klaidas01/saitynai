@@ -11,6 +11,7 @@ import { DropzoneArea } from 'material-ui-dropzone';
 import LibrarySelect from './LibrarySelect';
 import { useHistory } from 'react-router-dom';
 import { b64toFile } from './../../../services/helperFunctions';
+import CurrencyTextField from '@unicef/material-ui-currency-textfield';
 
 const bookSchema = yup.object({
   title: yup
@@ -32,6 +33,7 @@ const bookSchema = yup.object({
     .string()
     .required('Book description is required.')
     .max(500, 'Book description is too long! (max 500 characters)'),
+  lateFee: yup.number().required('Late fee is required.').typeError('Late fee must be a number.'),
   libraryId: yup.number().required('Library is required.'),
 });
 
@@ -94,6 +96,7 @@ const BookForm = ({
   description,
   libraryId,
   coverImage,
+  lateFee,
   onSubmit,
   libraryDisabled,
 }) => {
@@ -113,6 +116,7 @@ const BookForm = ({
           description: description,
           libraryId: libraryId,
           coverImage: coverImage,
+          lateFee: lateFee,
         }}
         validationSchema={bookSchema}
         onSubmit={(values) => {
@@ -167,6 +171,23 @@ const BookForm = ({
               />
               {formikProps.errors.description && formikProps.touched.description ? (
                 <div className={classes.error}>{formikProps.errors.description}</div>
+              ) : null}
+              <CurrencyTextField
+                className={classes.field}
+                label="Late fee per day"
+                variant="outlined"
+                value={formikProps.values.lateFee}
+                currencySymbol="€"
+                digitGroupSeparator=""
+                decimalCharacter="."
+                outputFormat="string"
+                textAlign="left"
+                onChange={(e, value) => formikProps.setFieldValue('lateFee', value)}
+                minimumValue="0"
+                fullWidth
+              />
+              {formikProps.errors.lateFee && formikProps.touched.lateFee ? (
+                <div className={classes.error}>{formikProps.errors.lateFee}</div>
               ) : null}
               <LibrarySelect
                 className={classes.field}
@@ -232,6 +253,7 @@ BookForm.propTypes = {
   libraryId: PropTypes.string,
   libraryDisabled: PropTypes.bool,
   coverImage: PropTypes.string,
+  lateFee: PropTypes.string,
 };
 
 BookForm.defaultProps = {
@@ -244,6 +266,7 @@ BookForm.defaultProps = {
     console.log(values);
   },
   libraryId: '',
+  lateFee: '0',
   libraryDisabled: false,
 };
 
