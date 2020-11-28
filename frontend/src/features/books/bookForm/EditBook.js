@@ -78,10 +78,10 @@ const NewBook = (props) => {
           },
           variant: 'error',
         });
-        if (e.response && e.response.status === 401);
+        if (e.response);
         {
           history.push('/libraries');
-          if (user.role !== 'Guest') {
+          if (user.role !== 'Guest' && e.response.status === 401) {
             logOut(user.setUser);
           }
         }

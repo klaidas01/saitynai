@@ -35,6 +35,17 @@ namespace LibraryAPI.Controllers
             return Ok(reservations);
         }
 
+        // GET: api/Reservations/me
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<ActionResult<ItemsDTO<Reservation>>> GetUserReservations([FromQuery] SliceDTO slice)
+        {
+            var role = this.User.FindFirst(ClaimTypes.Role).Value;
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var reservations = await _reservationService.GetUserReservations(userName, role, slice.Page, slice.RowsPerPage, (slice.SearchTerm != null) ? slice.SearchTerm : "");
+            return Ok(reservations);
+        }
+
         // GET: api/Reservation/5
         [HttpGet("{id}")]
         [Authorize]
@@ -69,6 +80,32 @@ namespace LibraryAPI.Controllers
             try
             {
                 await _reservationService.UpdateReservation(id, reservation, userName, role);
+                return NoContent();
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(403);
+            }
+        }
+
+        // PATCH: api/Reservations/5
+        [HttpPatch("{id}")]
+        [Authorize(Roles = "Administrator,Employee")]
+        public async Task<IActionResult> MarkAsReturned(int id)
+        {
+            var role = this.User.FindFirst(ClaimTypes.Role).Value;
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            try
+            {
+                await _reservationService.ReturnBook(id, userName, role);
                 return NoContent();
             }
             catch (DbUpdateException)

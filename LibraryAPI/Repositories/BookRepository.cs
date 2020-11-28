@@ -27,12 +27,13 @@ namespace LibraryAPI.Repositories
             return books;
         }
 
-        public async Task<ItemsDTO<Book>> GetSlice(int page, int rowsPerPage, string searchTerm)
+        public async Task<ItemsDTO<Book>> GetSlice(int page, int rowsPerPage, string searchTerm, bool icludeReserved)
         {
-            var count = _context.Books.Count(b => b.Title.ToLower().Contains(searchTerm.ToLower()) || b.Author.ToLower().Contains(searchTerm.ToLower()));
+            var count = _context.Books.Count(b => (b.Title.ToLower().Contains(searchTerm.ToLower()) || b.Author.ToLower().Contains(searchTerm.ToLower())) && (!b.IsReserved || icludeReserved));
 
             var books = await _context.Books
                 .OrderBy(b => b.Title)
+                .Where(b => !b.IsReserved || icludeReserved)
                 .Where(b => b.Title.ToLower().Contains(searchTerm.ToLower()) || b.Author.ToLower().Contains(searchTerm.ToLower()))
                 .Skip((page) * rowsPerPage)
                 .Take(rowsPerPage)
@@ -42,12 +43,13 @@ namespace LibraryAPI.Repositories
             return new ItemsDTO<Book> { items = books, count = count };
         }
 
-        public async Task<ItemsDTO<Book>> GetLibrarySlice(int page, int rowsPerPage, int libraryId, string searchTerm)
+        public async Task<ItemsDTO<Book>> GetLibrarySlice(int page, int rowsPerPage, int libraryId, string searchTerm, bool icludeReserved)
         {
-            var count = _context.Books.Count(b => b.LibraryId == libraryId && (b.Title.ToLower().Contains(searchTerm.ToLower()) || b.Author.ToLower().Contains(searchTerm.ToLower())));
+            var count = _context.Books.Count(b => (b.Title.ToLower().Contains(searchTerm.ToLower()) || b.Author.ToLower().Contains(searchTerm.ToLower())) && (!b.IsReserved || icludeReserved));
 
             var books = await _context.Books
                 .OrderBy(b => b.Title)
+                .Where(b => !b.IsReserved || icludeReserved)
                 .Where(b => (b.Title.ToLower().Contains(searchTerm.ToLower()) || b.Author.ToLower().Contains(searchTerm.ToLower())) && b.LibraryId == libraryId)
                 .Skip((page) * rowsPerPage)
                 .Take(rowsPerPage)

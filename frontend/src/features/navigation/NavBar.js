@@ -136,7 +136,6 @@ const NavBar = () => {
         <div className={classes.navigation}>
           <Button
             component={NavLink}
-            exact
             to="/libraries"
             className={classes.navButton}
             activeClassName={classes.navActive}
@@ -145,7 +144,6 @@ const NavBar = () => {
           </Button>
           <Button
             component={NavLink}
-            exact
             to="/books"
             className={classes.navButton}
             activeClassName={classes.navActive}
@@ -155,7 +153,6 @@ const NavBar = () => {
           <ProtectedComponent roles={['Administrator', 'Employee']}>
             <Button
               component={NavLink}
-              exact
               to="/reservations"
               className={classes.navButton}
               activeClassName={classes.navActive}

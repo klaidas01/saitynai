@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import GenericTable from './../../common/GenericTable';
 import TextField from '@material-ui/core/TextField';
 import axiosInstance from './../../services/axiosInstance';
-import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import SearchIcon from '@material-ui/icons/Search';
 import { IconButton, InputAdornment, Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import { logOut, UserContext } from './../../services/authService';
+import StateCell from './StateCell';
 
 const useStyles = makeStyles(() => ({
   search: {
@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Populatedtable = ({ onRowClick, columns, path }) => {
+const UserReservationList = () => {
   const [items, setItems] = useState([]);
   const [count, setCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,13 +34,13 @@ const Populatedtable = ({ onRowClick, columns, path }) => {
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const didMount = useRef(false);
-  const history = useHistory();
   const user = useContext(UserContext);
+  const history = useHistory();
 
   const fetchItems = async (page, rowsPerPage, searchTerm) => {
     setIsLoading(true);
     try {
-      const response = await axiosInstance.get(path, {
+      const response = await axiosInstance.get('reservations/me', {
         params: {
           Page: page,
           RowsPerPage: rowsPerPage,
@@ -52,7 +52,7 @@ const Populatedtable = ({ onRowClick, columns, path }) => {
       setRowsPerPage(rowsPerPage);
       setPage(page);
     } catch (e) {
-      enqueueSnackbar('Could not get ' + path, {
+      enqueueSnackbar('Could not get reservations', {
         anchorOrigin: {
           vertical: 'bottom',
           horizontal: 'center',
@@ -69,6 +69,37 @@ const Populatedtable = ({ onRowClick, columns, path }) => {
     }
     setIsLoading(false);
   };
+
+  const columns = [
+    { id: 'userName', label: 'Username', maxWidth: '7vw' },
+    { id: 'bookName', label: 'Book name', maxWidth: '7vw' },
+    { id: 'libraryName', label: 'Library name', maxWidth: '7vw' },
+    {
+      id: 'startDate',
+      label: 'Start date',
+      format: (value) => new Date(value).toLocaleDateString(),
+      maxWidth: '7vw',
+    },
+    {
+      id: 'returnDate',
+      label: 'Return date',
+      format: (value) => new Date(value).toLocaleDateString(),
+      maxWidth: '7vw',
+    },
+    {
+      id: 'state',
+      label: 'Reservation state',
+      Component: StateCell,
+      align: 'center',
+    },
+    {
+      id: 'lateFee',
+      label: 'Late fee',
+      format: (value) => (value ? value.toFixed(2) + '€' : '-'),
+      align: 'center',
+      maxWidth: '5vw',
+    },
+  ];
 
   const handlePageChange = async (event, newPage) => {
     await fetchItems(newPage, rowsPerPage, searchTerm);
@@ -126,7 +157,6 @@ const Populatedtable = ({ onRowClick, columns, path }) => {
         rowsPerPage={rowsPerPage}
         handlePageChange={handlePageChange}
         handleRowsPerPageChange={handleRowsPerPageChange}
-        onRowClick={onRowClick}
         isLoading={isLoading}
         renderButtons={false}
       />
@@ -134,14 +164,4 @@ const Populatedtable = ({ onRowClick, columns, path }) => {
   );
 };
 
-Populatedtable.propTypes = {
-  onRowClick: PropTypes.func,
-  columns: PropTypes.array.isRequired,
-  path: PropTypes.string.isRequired,
-};
-
-Populatedtable.defaultProps = {
-  onRowClick: () => {},
-};
-
-export default Populatedtable;
+export default UserReservationList;

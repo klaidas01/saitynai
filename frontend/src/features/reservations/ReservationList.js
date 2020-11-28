@@ -15,6 +15,7 @@ import { useHistory } from 'react-router-dom';
 import GenericModal from '../../common/GenericModal';
 import { logOut, UserContext } from './../../services/authService';
 import StateCell from './StateCell';
+import ConfirmButton from './../../common/ConfirmButton';
 
 const useStyles = makeStyles(() => ({
   search: {
@@ -43,23 +44,114 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
   const user = useContext(UserContext);
   const history = useHistory();
 
+  const fetchItems = async (page, rowsPerPage, searchTerm) => {
+    setIsLoading(true);
+    try {
+      const response = await axiosInstance.get('reservations', {
+        params: {
+          Page: page,
+          RowsPerPage: rowsPerPage,
+          SearchTerm: searchTerm,
+        },
+      });
+      setItems(response.data.items);
+      setCount(response.data.count);
+      setRowsPerPage(rowsPerPage);
+      setPage(page);
+    } catch (e) {
+      enqueueSnackbar('Could not get reservations', {
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+        variant: 'error',
+      });
+      if (e.response);
+      {
+        history.push('/libraries');
+        if (user.role !== 'Guest' && e.response.status === 401) {
+          logOut(user.setUser);
+        }
+      }
+    }
+    setIsLoading(false);
+  };
+
+  const Return = ({ row }) => {
+    const markAsReturned = async (row) => {
+      setIsLoading(true);
+      try {
+        await axiosInstance.patch('reservations/' + row.id);
+        await fetchItems(page, rowsPerPage, searchTerm);
+      } catch (e) {
+        enqueueSnackbar('Something went wrong', {
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+          variant: 'error',
+        });
+        if (e.response && e.response.status === 401);
+        {
+          history.push('/libraries');
+          if (user.role !== 'Guest') {
+            logOut(user.setUser);
+          }
+        }
+      }
+      enqueueSnackbar('Reservation marked as returned', {
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+        variant: 'success',
+      });
+      setIsLoading(false);
+    };
+
+    return (
+      <>
+        {console.log(row)}
+        {!row.isReturned && (
+          <ConfirmButton text="Mark as returned" onClick={async () => await markAsReturned(row)} />
+        )}
+      </>
+    );
+  };
+
   const columns = [
-    { id: 'userName', label: 'Username' },
+    { id: 'userName', label: 'Username', maxWidth: '5vw' },
+    { id: 'bookName', label: 'Book name', maxWidth: '5vw' },
+    { id: 'libraryName', label: 'Library name', maxWidth: '5vw' },
     {
       id: 'startDate',
       label: 'Start date',
       format: (value) => new Date(value).toLocaleDateString(),
+      maxWidth: '5vw',
     },
     {
       id: 'returnDate',
       label: 'Return date',
       format: (value) => new Date(value).toLocaleDateString(),
+      maxWidth: '5vw',
     },
-    { id: 'state', label: 'Reservation state', Component: StateCell, align: 'center' },
+    {
+      id: 'state',
+      label: 'Reservation state',
+      Component: StateCell,
+      align: 'center',
+    },
     {
       id: 'lateFee',
       label: 'Late fee',
       format: (value) => (value ? value.toFixed(2) + '€' : '-'),
+      align: 'center',
+      maxWidth: '3vw',
+    },
+    {
+      id: 'return',
+      label: '',
+      Component: Return,
       align: 'center',
     },
   ];
@@ -87,7 +179,6 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
         });
         if (e.response && e.response.status === 401);
         {
-          console.log('yes!');
           history.push('/libraries');
           if (user.role !== 'Guest') {
             logOut(user.setUser);
@@ -104,12 +195,16 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
       setIsLoading(false);
     };
 
+    Return.propTypes = {
+      row: PropTypes.object.isRequired,
+    };
+
     return (
       <>
         <ProtectedComponent roles={['Administrator', 'Employee']}>
           <IconButton
             onClick={() => {
-              history.push('/libraries/' + row.id + '/edit');
+              history.push('/reservations/' + row.id + '/edit');
             }}
           >
             <EditIcon />
@@ -134,39 +229,6 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
 
   Buttons.propTypes = {
     row: PropTypes.object.isRequired,
-  };
-
-  const fetchItems = async (page, rowsPerPage, searchTerm) => {
-    setIsLoading(true);
-    try {
-      const response = await axiosInstance.get('reservations', {
-        params: {
-          Page: page,
-          RowsPerPage: rowsPerPage,
-          SearchTerm: searchTerm,
-        },
-      });
-      setItems(response.data.items);
-      setCount(response.data.count);
-      setRowsPerPage(rowsPerPage);
-      setPage(page);
-    } catch (e) {
-      enqueueSnackbar('Could not get reservations', {
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'center',
-        },
-        variant: 'error',
-      });
-      if (e.response && e.response.status === 401);
-      {
-        history.push('/libraries');
-        if (user.role !== 'Guest') {
-          logOut(user.setUser);
-        }
-      }
-    }
-    setIsLoading(false);
   };
 
   const handlePageChange = async (event, newPage) => {
@@ -217,7 +279,7 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
           }}
         />
         {renderButtons && (
-          <ProtectedComponent roles={['Administrator']}>
+          <ProtectedComponent roles={['Administrator', 'Employee']}>
             <NavButton route="/reservations/create" text="Add new reservation" />
           </ProtectedComponent>
         )}

@@ -39,6 +39,12 @@ const useStyles = makeStyles(() => ({
     display: 'inline-block',
     whiteSpace: 'nowrap',
   },
+  notFound: {
+    color: '#A8A8A8',
+  },
+  table: {
+    width: '100%',
+  },
 }));
 
 const GenericTable = ({
@@ -58,15 +64,15 @@ const GenericTable = ({
 
   return (
     <Box className={classes.container} border={1} borderColor="grey.400" borderRadius={16}>
-      <TableContainer>
-        <Table data-testid="table">
-          <TableHead>
+      <TableContainer className={classes.table}>
+        <Table>
+          <TableHead data-testid="table">
             <TableRow>
               {columns.map((column, index) => (
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={{ minWidth: column.minWidth }}
+                  style={{ minWidth: column.minWidth, width: column.maxWidth }}
                   className={
                     index === 0
                       ? classes.headerFirst
@@ -92,6 +98,17 @@ const GenericTable = ({
           </TableHead>
           {!isLoading && (
             <TableBody>
+              {(!items || items.length === 0) && (
+                <TableRow>
+                  <TableCell
+                    className={classes.notFound}
+                    align="center"
+                    colSpan={renderButtons ? columns.length + 1 : columns.length}
+                  >
+                    No entries
+                  </TableCell>
+                </TableRow>
+              )}
               {items.map((row) => {
                 return (
                   <TableRow
@@ -108,13 +125,21 @@ const GenericTable = ({
                         : row[column.id];
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          {column.Component ? (
-                            <column.Component row={row} />
-                          ) : column.format ? (
-                            column.format(value)
-                          ) : (
-                            value
-                          )}
+                          <div
+                            style={{
+                              minWidth: column.minWidth,
+                              width: column.maxWidth,
+                              wordWrap: 'break-word',
+                            }}
+                          >
+                            {column.Component ? (
+                              <column.Component row={row} />
+                            ) : column.format ? (
+                              column.format(value)
+                            ) : (
+                              value
+                            )}
+                          </div>
                         </TableCell>
                       );
                     })}

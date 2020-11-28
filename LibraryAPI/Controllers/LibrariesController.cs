@@ -45,6 +45,19 @@ namespace LibraryAPI.Controllers
             return Ok(books);
         }
 
+        // GET: api/Libraries/1/books
+        [HttpGet("{libraryId}/books/available")]
+        public async Task<ActionResult<Library>> GetAvailableLibraryBooks([FromQuery] SliceDTO slice, [FromRoute] int libraryId)
+        {
+            var library = await _libraryService.GetLibrary(libraryId);
+            if (library == null)
+            {
+                return NotFound();
+            }
+            var books = await _bookService.GetLibrarySlice(slice.Page, slice.RowsPerPage, libraryId, (slice.SearchTerm != null) ? slice.SearchTerm : "", false);
+            return Ok(books);
+        }
+
         // GET: api/Libraries/1/books/1
         [HttpGet("{libraryId}/books/{bookId}")]
         public async Task<ActionResult<Library>> GetLibraryBook([FromRoute] int libraryId, [FromRoute] int bookId)

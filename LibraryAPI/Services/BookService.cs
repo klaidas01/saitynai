@@ -30,15 +30,15 @@ namespace LibraryAPI.Services
             return books;
         }
 
-        public async Task<ItemsDTO<Book>> GetSlice(int page, int rowsPerPage, string searchTerm = "")
+        public async Task<ItemsDTO<Book>> GetSlice(int page, int rowsPerPage, string searchTerm = "", bool includeReserved = true)
         {
-            var books = await _repo.GetSlice(page, rowsPerPage, searchTerm);
+            var books = await _repo.GetSlice(page, rowsPerPage, searchTerm, includeReserved);
             return books;
         }
 
-        public async Task<ItemsDTO<Book>> GetLibrarySlice(int page, int rowsPerPage, int libraryId, string searchTerm = "")
+        public async Task<ItemsDTO<Book>> GetLibrarySlice(int page, int rowsPerPage, int libraryId, string searchTerm = "", bool includeReserved = true)
         {
-            var books = await _repo.GetLibrarySlice(page, rowsPerPage, libraryId, searchTerm);
+            var books = await _repo.GetLibrarySlice(page, rowsPerPage, libraryId, searchTerm, includeReserved);
             return books;
         }
 

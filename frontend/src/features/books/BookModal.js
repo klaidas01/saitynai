@@ -39,6 +39,10 @@ const useStyles = makeStyles(() => ({
     marginLeft: '2%',
     marginBottom: '1%',
   },
+  list: {
+    width: '100%',
+    wordWrap: 'break-word',
+  },
 }));
 
 const BookModal = ({ book, open, handleClose }) => {
@@ -51,7 +55,7 @@ const BookModal = ({ book, open, handleClose }) => {
         <Box border={1} borderColor="grey.400" borderRadius={16} className={classes.border}>
           <Grid container>
             <Grid item className={classes.section1} sm={6}>
-              <List>
+              <List className={classes.list}>
                 <ListItem>
                   <ListItemAvatar>
                     <Avatar>
@@ -63,7 +67,7 @@ const BookModal = ({ book, open, handleClose }) => {
               </List>
             </Grid>
             <Grid item className={classes.section2} sm={6}>
-              <List>
+              <List className={classes.list}>
                 <ListItem>
                   <ListItemAvatar>
                     <Avatar>
@@ -75,7 +79,7 @@ const BookModal = ({ book, open, handleClose }) => {
               </List>
             </Grid>
             <Grid item className={classes.section1} sm={6}>
-              <List>
+              <List className={classes.list}>
                 <ListItem>
                   <ListItemAvatar>
                     <Avatar>
@@ -87,7 +91,7 @@ const BookModal = ({ book, open, handleClose }) => {
               </List>
             </Grid>
             <Grid item className={classes.section2} sm={6}>
-              <List>
+              <List className={classes.list}>
                 <ListItem>
                   <ListItemAvatar>
                     <Avatar>
@@ -102,7 +106,7 @@ const BookModal = ({ book, open, handleClose }) => {
               </List>
             </Grid>
             <Grid item className={classes.section1} sm={6}>
-              <List>
+              <List className={classes.list}>
                 <ListItem>
                   <ListItemAvatar>
                     <Avatar>
@@ -118,7 +122,7 @@ const BookModal = ({ book, open, handleClose }) => {
               </List>
             </Grid>
             <Grid item className={classes.section2} sm={6}>
-              <List>
+              <List className={classes.list}>
                 <ListItem>
                   <ListItemAvatar>
                     <Avatar>{book.isReserved ? <CancelIcon /> : <CheckCircleIcon />}</Avatar>

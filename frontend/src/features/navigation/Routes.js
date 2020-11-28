@@ -8,7 +8,9 @@ import NewLibrary from './../libraries/LibraryForm/NewLibrary';
 import EditLibrary from './../libraries/LibraryForm/EditLibrary';
 import ProtectedRoute from './../../common/ProtectedRoute';
 import ReservationList from './../reservations/ReservationList';
-import ReservationForm from '../reservations/ReservationForm/ReservationForm';
+import UserReservationList from './../reservations/UserReservationList';
+import NewReservation from './../reservations/ReservationForm/NewReservation';
+import EditReservation from './../reservations/ReservationForm/EditReservation';
 
 const Routes = () => {
   return (
@@ -50,9 +52,16 @@ const Routes = () => {
       <ProtectedRoute
         exact
         path="/reservations/create"
-        component={ReservationForm}
+        component={NewReservation}
         roles={['Administrator', 'Employee']}
       />
+      <ProtectedRoute
+        exact
+        path="/reservations/:reservationId/edit"
+        component={EditReservation}
+        roles={['Administrator', 'Employee']}
+      />
+      <Route exact path="/reservations/me" component={UserReservationList}></Route>
       <Redirect to="/libraries" />
     </Switch>
   );

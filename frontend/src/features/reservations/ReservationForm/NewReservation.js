@@ -1,5 +1,5 @@
 import { React, useContext, useState } from 'react';
-import LibraryForm from './LibraryForm';
+import ReservationForm from './ReservationForm';
 import axiosInstance from './../../../services/axiosInstance';
 import { useSnackbar } from 'notistack';
 import { useHistory } from 'react-router-dom';
@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const NewLibrary = () => {
+const NewReservation = () => {
   const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
   const user = useContext(UserContext);
@@ -25,8 +25,8 @@ const NewLibrary = () => {
     const uploadItem = async () => {
       setLoading(true);
       try {
-        await axiosInstance.post('libraries', values);
-        enqueueSnackbar('Library created', {
+        await axiosInstance.post('reservations', values);
+        enqueueSnackbar('Reservation created', {
           anchorOrigin: {
             vertical: 'bottom',
             horizontal: 'center',
@@ -55,7 +55,7 @@ const NewLibrary = () => {
     uploadItem();
   };
   if (loading) return <CircularProgress className={classes.center} />;
-  return <LibraryForm onSubmit={onSumbit} />;
+  return <ReservationForm onSubmit={onSumbit} />;
 };
 
-export default NewLibrary;
+export default NewReservation;

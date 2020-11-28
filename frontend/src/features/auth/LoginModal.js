@@ -89,10 +89,15 @@ const LoginModal = ({ onSubmit }) => {
             validationSchema={loginSchema}
             onSubmit={(values) => {
               onSubmit(values);
+              handleClose();
             }}
           >
             {(formikProps) => (
-              <>
+              <div
+                onKeyUp={(e) => {
+                  if (e.key === 'Enter') formikProps.handleSubmit(formikProps.values);
+                }}
+              >
                 <TextField
                   inputProps={{ 'data-testid': 'usernameInput' }}
                   label="Username"
@@ -126,13 +131,12 @@ const LoginModal = ({ onSubmit }) => {
                     <ConfirmButton
                       onClick={(values) => {
                         formikProps.handleSubmit(values);
-                        handleClose();
                       }}
                       text="Submit"
                     />
                   </div>
                 </div>
-              </>
+              </div>
             )}
           </Formik>
         </DialogContent>

@@ -35,20 +35,27 @@ namespace LibraryAPI.Services
             return reservations;
         }
 
-        public async Task<SingleReservationResponse> GetReservation(int id, string userName, string role)
+        public async Task<ItemsDTO<ReservationResponse>> GetUserReservations(string userName, string role, int page, int rowsPerPage, string searchTerm = "")
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            var reservations = await _repo.GetUserReservations(user.Id, page, rowsPerPage, searchTerm);
+            return reservations;
+        }
+
+        public async Task<Reservation> GetReservation(int id, string userName, string role)
         {
             var reservation = await _repo.GetReservation(id);
             if (reservation == null) return reservation;
             if (role == "User")
             {
                 var user = await _userManager.FindByNameAsync(userName);
-                if (reservation.reservation.UserId == user.Id) return reservation;
+                if (reservation.UserId == user.Id) return reservation;
                 else throw new UnauthorizedAccessException();
             }
             if (role == "Employee")
             {
                 var user = await _userManager.FindByNameAsync(userName);
-                if (reservation.reservation.Book.LibraryId == user.LibraryId) return reservation;
+                if (reservation.Book.LibraryId == user.LibraryId) return reservation;
                 else throw new UnauthorizedAccessException();
             }
             return reservation;
@@ -80,20 +87,20 @@ namespace LibraryAPI.Services
         public async Task<Reservation> DeleteReservation(int id, string userName, string role)
         {
             var reservation = await _repo.GetReservation(id);
-            var book = await _bookRepo.GetBook(reservation.reservation.BookId);
+            var book = await _bookRepo.GetBook(reservation.BookId);
             if (role == "Employee")
             {
                 var user = await _userManager.FindByNameAsync(userName);
                 if (book.LibraryId != user.LibraryId)
                     throw new UnauthorizedAccessException();
             }
-            await _repo.DeleteReservation(reservation.reservation);
-            if (!reservation.reservation.IsReturned)
+            await _repo.DeleteReservation(reservation);
+            if (!reservation.IsReturned)
             {
                 book.IsReserved = false;
                 await _bookRepo.UpdateBook(book);
             }
-            return reservation.reservation;
+            return reservation;
         }
 
         public async Task<int> UpdateReservation(int id, ReservationDTO reservation, string userName, string role)
@@ -118,7 +125,33 @@ namespace LibraryAPI.Services
                 StartDate = (DateTime)reservation.StartDate,
                 ReturnDate = (DateTime)reservation.ReturnDate,
                 IsReturned = false
-            }); 
+            });
+            if (book.Id != oldBook.Id)
+            {
+                oldBook.IsReserved = false;
+                book.IsReserved = true;
+                await _bookRepo.UpdateBook(oldBook);
+                await _bookRepo.UpdateBook(book);
+            }
+            return id;
+        }
+
+        public async Task<int> ReturnBook(int id, string userName, string role)
+        {
+            var oldReservation = await _repo.GetReservation(id);
+            if (oldReservation == null || oldReservation.IsReturned) throw new KeyNotFoundException();
+            var oldBook = await _bookRepo.GetBook((int)oldReservation.BookId);
+            if (!oldBook.IsReserved) throw new KeyNotFoundException();
+            if (role == "Employee")
+            {
+                var user = await _userManager.FindByNameAsync(userName);
+                if (oldBook.LibraryId != user.LibraryId)
+                    throw new UnauthorizedAccessException();
+            }
+            oldReservation.IsReturned = true;
+            oldBook.IsReserved = false;
+            await _repo.UpdateReservation(oldReservation);
+            await _bookRepo.UpdateBook(oldBook);
             return id;
         }
     }

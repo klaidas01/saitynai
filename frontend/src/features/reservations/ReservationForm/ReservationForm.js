@@ -1,6 +1,6 @@
 import { Grid, Paper, Typography } from '@material-ui/core';
 import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import React from 'react';
+import React, { useContext } from 'react';
 import * as yup from 'yup';
 import PropTypes from 'prop-types';
 import { Formik } from 'formik';
@@ -11,26 +11,27 @@ import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { lightBlue } from '@material-ui/core/colors';
 import ItemPicker from '../../../common/ItemPicker/ItemPicker';
+import { UserContext } from '../../../services/authService';
 
 const bookColumns = [
-  { id: 'title', label: 'Title' },
-  { id: 'author', label: 'Author' },
-  { id: 'library', label: 'Library', nested: true, nestedField: 'name' },
+  { id: 'title', label: 'Title', maxWidth: '7vw' },
+  { id: 'author', label: 'Author', maxWidth: '7vw' },
+  { id: 'library', label: 'Library', nested: true, nestedField: 'name', maxWidth: '7vw' },
 ];
 
 const userColumns = [
-  { id: 'userName', label: 'Username' },
-  { id: 'firstName', label: 'First Name' },
-  { id: 'lastName', label: 'Last Name' },
+  { id: 'userName', label: 'Username', maxWidth: '7vw' },
+  { id: 'firstName', label: 'First Name', maxWidth: '7vw' },
+  { id: 'lastName', label: 'Last Name', maxWidth: '7vw' },
 ];
 
 const bookSchema = yup.object({
   startDate: yup.date().required('Start date is required.').typeError('Start date is required.'),
-  endDate: yup
+  returnDate: yup
     .date()
-    .required('End date is required.')
-    .typeError('End date is required.')
-    .min(yup.ref('startDate'), 'End date must be after start date'),
+    .required('Return date is required.')
+    .typeError('Return date is required.')
+    .min(yup.ref('startDate'), 'Return date must be after start date'),
   bookId: yup.number().required('Book is required.'),
   userId: yup.string().required('User is required.'),
 });
@@ -116,9 +117,10 @@ const defaultMaterialTheme = createMuiTheme({
   },
 });
 
-const ReservationForm = ({ startDate, endDate, bookId, userId, onSubmit }) => {
+const ReservationForm = ({ startDate, returnDate, bookId, userId, onSubmit }) => {
   const classes = useStyles();
   const history = useHistory();
+  const user = useContext(UserContext);
 
   return (
     <Paper variant="outlined" className={classes.container}>
@@ -128,7 +130,7 @@ const ReservationForm = ({ startDate, endDate, bookId, userId, onSubmit }) => {
       <Formik
         initialValues={{
           startDate: startDate,
-          endDate: endDate,
+          returnDate: returnDate,
           bookId: bookId,
           userId: userId,
         }}
@@ -141,7 +143,12 @@ const ReservationForm = ({ startDate, endDate, bookId, userId, onSubmit }) => {
           <Grid className={classes.gridContainer} container spacing={5}>
             <Grid item xs={12} sm={6} className={classes.section1}>
               <ItemPicker
-                path="books"
+                path={
+                  user.role === 'Employee'
+                    ? 'libraries/' + user.libraryId + '/books/available'
+                    : 'books/available'
+                }
+                getByIdPath="books"
                 columns={bookColumns}
                 onChange={(value) => formikProps.setFieldValue('bookId', value)}
                 value={formikProps.values.bookId}
@@ -181,7 +188,7 @@ const ReservationForm = ({ startDate, endDate, bookId, userId, onSubmit }) => {
                       formikProps.setFieldValue('startDate', value);
                       if (value)
                         formikProps.setFieldValue(
-                          'endDate',
+                          'returnDate',
                           new Date(new Date().setDate(value.getDate() + 14))
                         );
                     }}
@@ -209,15 +216,15 @@ const ReservationForm = ({ startDate, endDate, bookId, userId, onSubmit }) => {
                         : undefined
                     }
                     inputVariant="outlined"
-                    label="End date"
-                    value={formikProps.values.endDate}
-                    onChange={(value) => formikProps.setFieldValue('endDate', value)}
+                    label="Return date"
+                    value={formikProps.values.returnDate}
+                    onChange={(value) => formikProps.setFieldValue('returnDate', value)}
                     animateYearScrolling
                   />
                 </MuiPickersUtilsProvider>
               </ThemeProvider>
-              {formikProps.errors.endDate && formikProps.touched.endDate ? (
-                <div className={classes.error}>{formikProps.errors.endDate}</div>
+              {formikProps.errors.returnDate && formikProps.touched.returnDate ? (
+                <div className={classes.error}>{formikProps.errors.returnDate}</div>
               ) : null}
             </Grid>
             <Grid item xs={12} className={classes.section2}>
@@ -243,15 +250,15 @@ const ReservationForm = ({ startDate, endDate, bookId, userId, onSubmit }) => {
 
 ReservationForm.propTypes = {
   startDate: PropTypes.instanceOf(Date),
-  endDate: PropTypes.instanceOf(Date),
-  bookId: PropTypes.string,
+  returnDate: PropTypes.instanceOf(Date),
+  bookId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   userId: PropTypes.string,
   onSubmit: PropTypes.func,
 };
 
 ReservationForm.defaultProps = {
   startDate: null,
-  endDate: null,
+  returnDate: null,
   bookId: '',
   userId: '',
   onSubmit: (values) => {

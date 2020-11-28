@@ -55,6 +55,12 @@ const useStyles = makeStyles(() => ({
   pagination: {
     borderTop: '1px solid #bdbdbd',
   },
+  notFound: {
+    color: '#A8A8A8',
+    margin: 'auto',
+    width: '100%',
+    textAlign: 'center',
+  },
 }));
 
 const ImageGridList = ({
@@ -93,6 +99,7 @@ const ImageGridList = ({
         {isLoading && <CircularProgress className={classes.center} />}
         {!isLoading && (
           <GridList cellHeight="auto" spacing={30} cols={mediumBreakpoint ? 5 : 3}>
+            {(!items || items.length === 0) && <div className={classes.notFound}> No entries</div>}
             {items.map((tile) => (
               <GridListTile key={tile.id}>
                 <img

@@ -8,10 +8,10 @@ import TextField from '@material-ui/core/TextField';
 import CancelButton from './../../../common/CancelButton';
 import ConfirmButton from './../../../common/ConfirmButton';
 import { DropzoneArea } from 'material-ui-dropzone';
-import LibrarySelect from './LibrarySelect';
 import { useHistory } from 'react-router-dom';
 import { b64toFile } from './../../../services/helperFunctions';
 import CurrencyTextField from '@unicef/material-ui-currency-textfield';
+import ItemPicker from './../../../common/ItemPicker/ItemPicker';
 
 const bookSchema = yup.object({
   title: yup
@@ -88,6 +88,11 @@ const useStyles = makeStyles(() => ({
     flexGrow: '1',
   },
 }));
+
+const columns = [
+  { id: 'name', label: 'Name', maxWidth: '13vw' },
+  { id: 'address', label: 'Address', maxWidth: '13vw' },
+];
 
 const BookForm = ({
   title,
@@ -189,10 +194,14 @@ const BookForm = ({
               {formikProps.errors.lateFee && formikProps.touched.lateFee ? (
                 <div className={classes.error}>{formikProps.errors.lateFee}</div>
               ) : null}
-              <LibrarySelect
+              <ItemPicker
+                path="libraries"
+                columns={columns}
+                onChange={(value) => formikProps.setFieldValue('libraryId', value)}
+                value={formikProps.values.libraryId}
+                displayField="name"
+                label="Book's library"
                 className={classes.field}
-                setId={(id) => formikProps.setFieldValue('libraryId', id)}
-                libraryId={+libraryId}
                 disabled={libraryDisabled}
               />
               {formikProps.errors.libraryId && formikProps.touched.libraryId ? (
@@ -250,10 +259,10 @@ BookForm.propTypes = {
   pageCount: PropTypes.string,
   description: PropTypes.string,
   onSubmit: PropTypes.func,
-  libraryId: PropTypes.string,
-  libraryDisabled: PropTypes.bool,
+  libraryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   coverImage: PropTypes.string,
-  lateFee: PropTypes.string,
+  lateFee: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  libraryDisabled: PropTypes.bool,
 };
 
 BookForm.defaultProps = {

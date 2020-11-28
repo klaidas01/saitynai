@@ -14,12 +14,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const ConfirmButton = ({ onClick, text }) => {
+const ConfirmButton = ({ onClick, onKeyPress, text }) => {
   const classes = useStyles();
   return (
     <Button
       data-testid="confirmButton"
       onClick={onClick}
+      onKeyPress={onKeyPress}
       className={classes.button}
       variant="outlined"
     >
@@ -30,7 +31,12 @@ const ConfirmButton = ({ onClick, text }) => {
 
 ConfirmButton.propTypes = {
   onClick: PropTypes.func.isRequired,
+  onKeyPress: PropTypes.func,
   text: PropTypes.string.isRequired,
+};
+
+ConfirmButton.defaultProps = {
+  onKeyPress: () => {},
 };
 
 export default ConfirmButton;

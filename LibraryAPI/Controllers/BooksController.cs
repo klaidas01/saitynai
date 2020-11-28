@@ -31,6 +31,14 @@ namespace LibraryAPI.Controllers
             return Ok(books);
         }
 
+        // GET: api/Books/available
+        [HttpGet("available")]
+        public async Task<ActionResult<IEnumerable<Book>>> GetAvailableBooks([FromQuery] SliceDTO slice)
+        {
+            var books = await _bookService.GetSlice(slice.Page, slice.RowsPerPage, (slice.SearchTerm != null) ? slice.SearchTerm : "", false);
+            return Ok(books);
+        }
+
         // GET: api/Books/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Book>> GetBook(int id)

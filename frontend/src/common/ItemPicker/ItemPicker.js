@@ -7,6 +7,7 @@ import Populatedtable from './PopulatedTable';
 
 const ItemPicker = ({
   path,
+  getByIdPath,
   columns,
   className,
   onChange,
@@ -35,7 +36,7 @@ const ItemPicker = ({
 
   useEffect(() => {
     const fetchItem = async () => {
-      const response = await axiosInstance.get(path + '/' + value);
+      const response = await axiosInstance.get((getByIdPath ? getByIdPath : path) + '/' + value);
       setItem(response.data);
       onChange(response.data.id);
       setShrink(true);
@@ -74,6 +75,7 @@ const ItemPicker = ({
 
 ItemPicker.propTypes = {
   path: PropTypes.string.isRequired,
+  getByIdPath: PropTypes.string,
   columns: PropTypes.array.isRequired,
   onChange: PropTypes.func.isRequired,
   className: PropTypes.string,
@@ -88,6 +90,7 @@ ItemPicker.defaultProps = {
   value: undefined,
   disabled: false,
   displayField: 'name',
+  getByIdPath: '',
 };
 
 export default ItemPicker;
