@@ -158,7 +158,6 @@ const UserReservationList = () => {
         handlePageChange={handlePageChange}
         handleRowsPerPageChange={handleRowsPerPageChange}
         isLoading={isLoading}
-        renderButtons={false}
       />
     </Paper>
   );

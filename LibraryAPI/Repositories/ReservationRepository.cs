@@ -32,7 +32,8 @@ namespace LibraryAPI.Repositories
         {
             var count = _context.Reservations.Count(r => r.User.UserName.ToLower().Contains(searchTerm.ToLower()));
             var reservations = await _context.Reservations
-                .OrderBy(r => r.StartDate)
+                .OrderBy(r => r.IsReturned)
+                .ThenBy(r => r.ReturnDate)
                 .Where(r => r.User.UserName.ToLower().Contains(searchTerm.ToLower()))
                 .Skip((page) * rowsPerPage)
                 .Take(rowsPerPage)
@@ -48,8 +49,9 @@ namespace LibraryAPI.Repositories
         {
             var count = _context.Reservations.Count(r => r.Book.Title.ToLower().Contains(searchTerm.ToLower()));
             var reservations = await _context.Reservations
-                .OrderBy(r => r.StartDate)
-                .Where(r => r.User.UserName.ToLower().Contains(searchTerm.ToLower()))
+                .OrderBy(r => r.IsReturned)
+                .ThenBy(r => r.ReturnDate)
+                .Where(r => r.Book.Title.ToLower().Contains(searchTerm.ToLower()))
                 .Where(r => r.UserId == uid)
                 .Skip((page) * rowsPerPage)
                 .Take(rowsPerPage)
@@ -75,7 +77,8 @@ namespace LibraryAPI.Repositories
         {
             var count = _context.Reservations.Count(r => r.User.UserName.ToLower().Contains(searchTerm.ToLower()) && r.Book.LibraryId == libraryId);
             var reservations = await _context.Reservations
-                .OrderBy(r => r.StartDate)
+                .OrderBy(r => r.IsReturned)
+                .ThenBy(r => r.ReturnDate)
                 .Where(r => r.User.UserName.ToLower().Contains(searchTerm.ToLower()) && r.Book.LibraryId == libraryId)
                 .Skip((page) * rowsPerPage)
                 .Take(rowsPerPage)

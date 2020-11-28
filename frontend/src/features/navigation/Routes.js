@@ -61,7 +61,12 @@ const Routes = () => {
         component={EditReservation}
         roles={['Administrator', 'Employee']}
       />
-      <Route exact path="/reservations/me" component={UserReservationList}></Route>
+      <ProtectedRoute
+        exact
+        path="/userReservations"
+        component={UserReservationList}
+        roles={['Administrator', 'Employee', 'User']}
+      />
       <Redirect to="/libraries" />
     </Switch>
   );

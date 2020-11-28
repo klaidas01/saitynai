@@ -29,6 +29,10 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     marginBottom: '1%',
   },
+  buttons: {
+    display: 'inline-block',
+    whiteSpace: 'nowrap',
+  },
 }));
 
 const ReservationList = ({ onRowClick, renderButtons }) => {
@@ -111,50 +115,12 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
 
     return (
       <>
-        {console.log(row)}
         {!row.isReturned && (
           <ConfirmButton text="Mark as returned" onClick={async () => await markAsReturned(row)} />
         )}
       </>
     );
   };
-
-  const columns = [
-    { id: 'userName', label: 'Username', maxWidth: '5vw' },
-    { id: 'bookName', label: 'Book name', maxWidth: '5vw' },
-    { id: 'libraryName', label: 'Library name', maxWidth: '5vw' },
-    {
-      id: 'startDate',
-      label: 'Start date',
-      format: (value) => new Date(value).toLocaleDateString(),
-      maxWidth: '5vw',
-    },
-    {
-      id: 'returnDate',
-      label: 'Return date',
-      format: (value) => new Date(value).toLocaleDateString(),
-      maxWidth: '5vw',
-    },
-    {
-      id: 'state',
-      label: 'Reservation state',
-      Component: StateCell,
-      align: 'center',
-    },
-    {
-      id: 'lateFee',
-      label: 'Late fee',
-      format: (value) => (value ? value.toFixed(2) + '€' : '-'),
-      align: 'center',
-      maxWidth: '3vw',
-    },
-    {
-      id: 'return',
-      label: '',
-      Component: Return,
-      align: 'center',
-    },
-  ];
 
   const Buttons = ({ row }) => {
     const history = useHistory();
@@ -200,15 +166,17 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
     };
 
     return (
-      <>
+      <div className={classes.buttons}>
         <ProtectedComponent roles={['Administrator', 'Employee']}>
-          <IconButton
-            onClick={() => {
-              history.push('/reservations/' + row.id + '/edit');
-            }}
-          >
-            <EditIcon />
-          </IconButton>
+          {!row.isReturned && (
+            <IconButton
+              onClick={() => {
+                history.push('/reservations/' + row.id + '/edit');
+              }}
+            >
+              <EditIcon />
+            </IconButton>
+          )}
           <IconButton onClick={() => setOpen(true)}>
             <DeleteIcon />
           </IconButton>
@@ -223,13 +191,51 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
             handleAccept={async () => await remove(row)}
           />
         </ProtectedComponent>
-      </>
+      </div>
     );
   };
 
   Buttons.propTypes = {
     row: PropTypes.object.isRequired,
   };
+
+  const columns = [
+    { id: 'userName', label: 'Username', maxWidth: '5vw' },
+    { id: 'bookName', label: 'Book name', maxWidth: '5vw' },
+    { id: 'libraryName', label: 'Library name', maxWidth: '5vw' },
+    {
+      id: 'startDate',
+      label: 'Start date',
+      format: (value) => new Date(value).toLocaleDateString(),
+      maxWidth: '5vw',
+    },
+    {
+      id: 'returnDate',
+      label: 'Return date',
+      format: (value) => new Date(value).toLocaleDateString(),
+      maxWidth: '5vw',
+    },
+    {
+      id: 'state',
+      label: 'Reservation state',
+      Component: StateCell,
+      align: 'center',
+    },
+    {
+      id: 'lateFee',
+      label: 'Late fee',
+      format: (value) => (value ? value.toFixed(2) + '€' : '-'),
+      align: 'center',
+      maxWidth: '3vw',
+    },
+    {
+      id: 'return',
+      label: '',
+      Component: Return,
+      align: 'center',
+    },
+    { id: 'actions', label: '', Component: Buttons, align: 'right' },
+  ];
 
   const handlePageChange = async (event, newPage) => {
     await fetchItems(newPage, rowsPerPage, searchTerm);

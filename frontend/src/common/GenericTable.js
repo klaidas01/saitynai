@@ -57,8 +57,7 @@ const GenericTable = ({
   handleRowsPerPageChange,
   onRowClick,
   isLoading,
-  renderButtons,
-  Buttons,
+  hover,
 }) => {
   const classes = useStyles();
 
@@ -76,7 +75,7 @@ const GenericTable = ({
                   className={
                     index === 0
                       ? classes.headerFirst
-                      : index === columns.length - 1 && !renderButtons
+                      : index === columns.length - 1
                       ? classes.headerLast
                       : classes.header
                   }
@@ -84,9 +83,6 @@ const GenericTable = ({
                   {column.label}
                 </TableCell>
               ))}
-              {renderButtons && (
-                <TableCell className={classes.headerLast} style={{ width: '1px' }}></TableCell>
-              )}
             </TableRow>
             {isLoading && (
               <TableRow>
@@ -100,11 +96,7 @@ const GenericTable = ({
             <TableBody>
               {(!items || items.length === 0) && (
                 <TableRow>
-                  <TableCell
-                    className={classes.notFound}
-                    align="center"
-                    colSpan={renderButtons ? columns.length + 1 : columns.length}
-                  >
+                  <TableCell className={classes.notFound} align="center" colSpan={columns.length}>
                     No entries
                   </TableCell>
                 </TableRow>
@@ -112,7 +104,7 @@ const GenericTable = ({
               {items.map((row) => {
                 return (
                   <TableRow
-                    hover={!renderButtons}
+                    hover={hover}
                     onClick={() => {
                       onRowClick(row);
                     }}
@@ -143,13 +135,6 @@ const GenericTable = ({
                         </TableCell>
                       );
                     })}
-                    {renderButtons && (
-                      <TableCell>
-                        <div className={classes.actions}>
-                          <Buttons row={row} />
-                        </div>
-                      </TableCell>
-                    )}
                   </TableRow>
                 );
               })}
@@ -180,8 +165,7 @@ GenericTable.propTypes = {
   handleRowsPerPageChange: PropTypes.func,
   onRowClick: PropTypes.func,
   isLoading: PropTypes.bool,
-  renderButtons: PropTypes.bool,
-  Buttons: PropTypes.func,
+  hover: PropTypes.bool,
 };
 
 GenericTable.defaultProps = {
@@ -194,10 +178,7 @@ GenericTable.defaultProps = {
   handleRowsPerPageChange: () => {},
   onRowClick: () => {},
   isLoading: false,
-  renderButtons: true,
-  Buttons: () => {
-    <div></div>;
-  },
+  hover: false,
 };
 
 export default GenericTable;

@@ -128,7 +128,7 @@ const Populatedtable = ({ onRowClick, columns, path }) => {
         handleRowsPerPageChange={handleRowsPerPageChange}
         onRowClick={onRowClick}
         isLoading={isLoading}
-        renderButtons={false}
+        hover
       />
     </Paper>
   );

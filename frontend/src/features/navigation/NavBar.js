@@ -160,6 +160,17 @@ const NavBar = () => {
               Reservations
             </Button>
           </ProtectedComponent>
+          <ProtectedComponent roles={['Administrator', 'Employee', 'User']}>
+            <Button
+              exact
+              component={NavLink}
+              to="/userReservations"
+              className={classes.navButton}
+              activeClassName={classes.navActive}
+            >
+              My Reservations
+            </Button>
+          </ProtectedComponent>
         </div>
         <div className={classes.auth}>
           <ProtectedComponent roles={['Guest']}>

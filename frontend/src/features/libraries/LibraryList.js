@@ -28,6 +28,10 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     marginBottom: '1%',
   },
+  buttons: {
+    display: 'inline-block',
+    whiteSpace: 'nowrap',
+  },
 }));
 
 const LibraryList = ({ onRowClick, renderButtons }) => {
@@ -41,11 +45,6 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
   const classes = useStyles();
   const didMount = useRef(false);
   const user = useContext(UserContext);
-
-  const columns = [
-    { id: 'name', label: 'Name', minWidth: 170 },
-    { id: 'address', label: 'Address', minWidth: 170 },
-  ];
 
   const Buttons = ({ row }) => {
     const history = useHistory();
@@ -87,7 +86,7 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
     };
 
     return (
-      <>
+      <div className={classes.buttons}>
         <IconButton
           onClick={() => {
             history.push('/libraries/' + row.id + '/books');
@@ -117,13 +116,19 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
             handleAccept={async () => await remove(row)}
           />
         </ProtectedComponent>
-      </>
+      </div>
     );
   };
 
   Buttons.propTypes = {
     row: PropTypes.object.isRequired,
   };
+
+  const columns = [
+    { id: 'name', label: 'Name', maxWidth: '20vw' },
+    { id: 'address', label: 'Address', maxWidth: '25vw' },
+    { id: 'actions', label: '', Component: Buttons, align: 'right' },
+  ];
 
   const fetchItems = async (page, rowsPerPage, searchTerm) => {
     setIsLoading(true);
