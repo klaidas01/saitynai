@@ -70,7 +70,7 @@ const BookList = (props) => {
   const remove = async (item) => {
     setIsLoading(true);
     try {
-      await axiosInstance.delete('books/' + item.id);
+      await axiosInstance.delete('books/' + item.id, { user: user, setUser: user.setUser });
       await fetchItems(
         items.length !== 1 || count === 1 ? page : page - 1,
         rowsPerPage,

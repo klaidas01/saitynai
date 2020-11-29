@@ -7,8 +7,7 @@ import { useSnackbar } from 'notistack';
 import SearchIcon from '@material-ui/icons/Search';
 import { IconButton, InputAdornment, Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useHistory } from 'react-router-dom';
-import { logOut, UserContext } from './../../services/authService';
+import { UserContext } from './../../services/authService';
 
 const useStyles = makeStyles(() => ({
   search: {
@@ -34,7 +33,6 @@ const Populatedtable = ({ onRowClick, columns, path }) => {
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const didMount = useRef(false);
-  const history = useHistory();
   const user = useContext(UserContext);
 
   const fetchItems = async (page, rowsPerPage, searchTerm) => {
@@ -46,6 +44,8 @@ const Populatedtable = ({ onRowClick, columns, path }) => {
           RowsPerPage: rowsPerPage,
           SearchTerm: searchTerm,
         },
+        user: user,
+        setUser: user.setUser,
       });
       setItems(response.data.items);
       setCount(response.data.count);
@@ -59,13 +59,6 @@ const Populatedtable = ({ onRowClick, columns, path }) => {
         },
         variant: 'error',
       });
-      if (e.response);
-      {
-        history.push('/libraries');
-        if (user.role !== 'Guest' && e.response.status === 401) {
-          logOut(user.setUser);
-        }
-      }
     }
     setIsLoading(false);
   };

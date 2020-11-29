@@ -13,7 +13,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useHistory } from 'react-router-dom';
 import GenericModal from '../../common/GenericModal';
-import { logOut, UserContext } from './../../services/authService';
+import { UserContext } from './../../services/authService';
 import StateCell from './StateCell';
 import ConfirmButton from './../../common/ConfirmButton';
 
@@ -46,7 +46,6 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
   const classes = useStyles();
   const didMount = useRef(false);
   const user = useContext(UserContext);
-  const history = useHistory();
 
   const fetchItems = async (page, rowsPerPage, searchTerm) => {
     setIsLoading(true);
@@ -57,6 +56,8 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
           RowsPerPage: rowsPerPage,
           SearchTerm: searchTerm,
         },
+        user: user,
+        setUser: user.setUser,
       });
       setItems(response.data.items);
       setCount(response.data.count);
@@ -70,13 +71,6 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
         },
         variant: 'error',
       });
-      if (e.response);
-      {
-        history.push('/libraries');
-        if (user.role !== 'Guest' && e.response.status === 401) {
-          logOut(user.setUser);
-        }
-      }
     }
     setIsLoading(false);
   };
@@ -85,7 +79,11 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
     const markAsReturned = async (row) => {
       setIsLoading(true);
       try {
-        await axiosInstance.patch('reservations/' + row.id);
+        await axiosInstance.patch(
+          'reservations/' + row.id,
+          {},
+          { user: user, setUser: user.setUser }
+        );
         await fetchItems(page, rowsPerPage, searchTerm);
       } catch (e) {
         enqueueSnackbar('Something went wrong', {
@@ -95,13 +93,6 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
           },
           variant: 'error',
         });
-        if (e.response && e.response.status === 401);
-        {
-          history.push('/libraries');
-          if (user.role !== 'Guest') {
-            logOut(user.setUser);
-          }
-        }
       }
       enqueueSnackbar('Reservation marked as returned', {
         anchorOrigin: {
@@ -129,7 +120,7 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
     const remove = async (row) => {
       setIsLoading(true);
       try {
-        await axiosInstance.delete('reservations/' + row.id);
+        await axiosInstance.delete('reservations/' + row.id, { user: user, setUser: user.setUser });
         await fetchItems(
           items.length !== 1 || count === 1 ? page : page - 1,
           rowsPerPage,
@@ -143,13 +134,6 @@ const ReservationList = ({ onRowClick, renderButtons }) => {
           },
           variant: 'error',
         });
-        if (e.response && e.response.status === 401);
-        {
-          history.push('/libraries');
-          if (user.role !== 'Guest') {
-            logOut(user.setUser);
-          }
-        }
       }
       enqueueSnackbar('Reservation deleted', {
         anchorOrigin: {

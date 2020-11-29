@@ -3,7 +3,7 @@ import ReservationForm from './ReservationForm';
 import axiosInstance from './../../../services/axiosInstance';
 import { useSnackbar } from 'notistack';
 import { useHistory } from 'react-router-dom';
-import { UserContext, logOut } from '../../../services/authService';
+import { UserContext } from '../../../services/authService';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { PropTypes } from 'prop-types';
@@ -28,7 +28,8 @@ const EditReservation = (props) => {
       setLoading(true);
       try {
         const response = await axiosInstance.get(
-          '/reservations/' + props.match.params.reservationId
+          '/reservations/' + props.match.params.reservationId,
+          { user: user, setUser: user.setUser }
         );
         setReservation(response.data);
       } catch (e) {
@@ -50,7 +51,10 @@ const EditReservation = (props) => {
     const updateLibrary = async () => {
       setLoading(true);
       try {
-        await axiosInstance.put('reservations/' + props.match.params.reservationId, values);
+        await axiosInstance.put('reservations/' + props.match.params.reservationId, values, {
+          user: user,
+          setUser: user.setUser,
+        });
         enqueueSnackbar('Reservation updated', {
           anchorOrigin: {
             vertical: 'bottom',
@@ -67,13 +71,6 @@ const EditReservation = (props) => {
           },
           variant: 'error',
         });
-        if (e.response);
-        {
-          history.push('/libraries');
-          if (user.role !== 'Guest' && e.response.status === 401) {
-            logOut(user.setUser);
-          }
-        }
       }
       setLoading(false);
     };

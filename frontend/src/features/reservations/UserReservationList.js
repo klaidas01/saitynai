@@ -6,8 +6,7 @@ import { useSnackbar } from 'notistack';
 import SearchIcon from '@material-ui/icons/Search';
 import { IconButton, InputAdornment, Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useHistory } from 'react-router-dom';
-import { logOut, UserContext } from './../../services/authService';
+import { UserContext } from './../../services/authService';
 import StateCell from './StateCell';
 
 const useStyles = makeStyles(() => ({
@@ -35,7 +34,6 @@ const UserReservationList = () => {
   const classes = useStyles();
   const didMount = useRef(false);
   const user = useContext(UserContext);
-  const history = useHistory();
 
   const fetchItems = async (page, rowsPerPage, searchTerm) => {
     setIsLoading(true);
@@ -46,6 +44,8 @@ const UserReservationList = () => {
           RowsPerPage: rowsPerPage,
           SearchTerm: searchTerm,
         },
+        user: user,
+        setUser: user.setUser,
       });
       setItems(response.data.items);
       setCount(response.data.count);
@@ -59,13 +59,6 @@ const UserReservationList = () => {
         },
         variant: 'error',
       });
-      if (e.response);
-      {
-        history.push('/libraries');
-        if (user.role !== 'Guest' && e.response.status === 401) {
-          logOut(user.setUser);
-        }
-      }
     }
     setIsLoading(false);
   };

@@ -10,10 +10,9 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const currentUser = Cookies.get('currentUser');
-    if (currentUser) {
+    if (config.user && config.user.token) {
       try {
-        const token = JSON.parse(currentUser).token;
+        const token = config.user.token;
         config.headers = {
           Authorization: `Bearer ${token}`,
         };
@@ -33,20 +32,24 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
+    if (!error.config || !error.config.user.token) return Promise.reject(error);
     const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest.retry) {
-      originalRequest.retry = true;
+    if (error.response.status === 401) {
       try {
-        const currentUser = JSON.parse(Cookies.get('currentUser'));
+        originalRequest.retry = true;
         const response = await axiosInstance.post('users/refresh', {
-          accessToken: currentUser.token,
-          refreshToken: currentUser.refreshToken,
+          accessToken: error.config.user.token,
+          refreshToken: error.config.user.refreshToken,
         });
-        Cookies.set('currentUser', response.data, { secure: true });
+        Cookies.set('currentUser', response.data, { secure: true, sameSite: 'Strict' });
+        error.config.setUser(response.data);
+        originalRequest.user = response.data;
+        return axiosInstance(originalRequest);
       } catch (e) {
+        Cookies.remove('currentUser');
+        error.config.setUser({ role: 'Guest' });
         return Promise.reject(error);
       }
-      return axiosInstance(originalRequest);
     }
     return Promise.reject(error);
   }

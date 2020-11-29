@@ -3,7 +3,7 @@ import LibraryForm from './LibraryForm';
 import axiosInstance from './../../../services/axiosInstance';
 import { useSnackbar } from 'notistack';
 import { useHistory } from 'react-router-dom';
-import { UserContext, logOut } from '../../../services/authService';
+import { UserContext } from '../../../services/authService';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -25,7 +25,7 @@ const NewLibrary = () => {
     const uploadItem = async () => {
       setLoading(true);
       try {
-        await axiosInstance.post('libraries', values);
+        await axiosInstance.post('libraries', values, { user: user, setUser: user.setUser });
         enqueueSnackbar('Library created', {
           anchorOrigin: {
             vertical: 'bottom',
@@ -42,13 +42,6 @@ const NewLibrary = () => {
           },
           variant: 'error',
         });
-        if (e.response);
-        {
-          history.push('/libraries');
-          if (user.role !== 'Guest' && e.response.status === 401) {
-            logOut(user.setUser);
-          }
-        }
       }
       setLoading(false);
     };

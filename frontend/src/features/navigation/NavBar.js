@@ -85,6 +85,7 @@ const NavBar = () => {
           });
         }
       } catch (e) {
+        console.log(e);
         enqueueSnackbar('Login failed', {
           anchorOrigin: {
             vertical: 'bottom',

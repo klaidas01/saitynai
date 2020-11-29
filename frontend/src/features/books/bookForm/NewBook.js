@@ -4,7 +4,7 @@ import axiosInstance from './../../../services/axiosInstance';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import { Redirect, useHistory } from 'react-router-dom';
-import { UserContext, logOut } from '../../../services/authService';
+import { UserContext } from '../../../services/authService';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -38,6 +38,8 @@ const NewBook = (props) => {
         headers: {
           'content-type': 'multipart/form-data',
         },
+        user: user,
+        setUser: user.setUser,
       };
       try {
         await axiosInstance.post('books', formData, config);
@@ -57,13 +59,6 @@ const NewBook = (props) => {
           },
           variant: 'error',
         });
-        if (e.response);
-        {
-          history.push('/libraries');
-          if (user.role !== 'Guest' && e.response.status === 401) {
-            logOut(user.setUser);
-          }
-        }
       }
       setLoading(false);
     };

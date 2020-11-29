@@ -3,7 +3,7 @@ import LibraryForm from './LibraryForm';
 import axiosInstance from './../../../services/axiosInstance';
 import { useSnackbar } from 'notistack';
 import { useHistory } from 'react-router-dom';
-import { UserContext, logOut } from '../../../services/authService';
+import { UserContext } from '../../../services/authService';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { PropTypes } from 'prop-types';
@@ -27,7 +27,10 @@ const EditLibrary = (props) => {
     const fetchLibrary = async () => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get('libraries/' + props.match.params.libraryId);
+        const response = await axiosInstance.get('libraries/' + props.match.params.libraryId, {
+          user: user,
+          setUser: user.setUser,
+        });
         setLibrary(response.data);
       } catch (e) {
         enqueueSnackbar('Something went wrong', {
@@ -47,7 +50,10 @@ const EditLibrary = (props) => {
     const updateLibrary = async () => {
       setLoading(true);
       try {
-        await axiosInstance.put('libraries/' + props.match.params.libraryId, values);
+        await axiosInstance.put('libraries/' + props.match.params.libraryId, values, {
+          user: user,
+          setUser: user.setUser,
+        });
         enqueueSnackbar('Library updated', {
           anchorOrigin: {
             vertical: 'bottom',
@@ -64,13 +70,6 @@ const EditLibrary = (props) => {
           },
           variant: 'error',
         });
-        if (e.response);
-        {
-          history.push('/libraries');
-          if (user.role !== 'Guest' && e.response.status === 401) {
-            logOut(user.setUser);
-          }
-        }
       }
       setLoading(false);
     };

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import axiosInstance from '../../services/axiosInstance';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import Populatedtable from './PopulatedTable';
+import { UserContext } from '../../services/authService';
 
 const ItemPicker = ({
   path,
@@ -19,6 +20,7 @@ const ItemPicker = ({
   const [item, setItem] = useState('');
   const [shrink, setShrink] = useState(false);
   const [open, setOpen] = useState(false);
+  const user = useContext(UserContext);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -36,7 +38,10 @@ const ItemPicker = ({
 
   useEffect(() => {
     const fetchItem = async () => {
-      const response = await axiosInstance.get((getByIdPath ? getByIdPath : path) + '/' + value);
+      const response = await axiosInstance.get((getByIdPath ? getByIdPath : path) + '/' + value, {
+        user: user,
+        setUser: user.setUser,
+      });
       setItem(response.data);
       onChange(response.data.id);
       setShrink(true);

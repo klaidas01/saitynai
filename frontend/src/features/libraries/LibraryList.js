@@ -14,7 +14,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useHistory } from 'react-router-dom';
 import GenericModal from '../../common/GenericModal';
-import { UserContext, logOut } from '../../services/authService';
+import { UserContext } from '../../services/authService';
 
 const useStyles = makeStyles(() => ({
   search: {
@@ -53,7 +53,7 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
     const remove = async (row) => {
       setIsLoading(true);
       try {
-        await axiosInstance.delete('libraries/' + row.id);
+        await axiosInstance.delete('libraries/' + row.id, { user: user, setUser: user.setUser });
         await fetchItems(
           items.length !== 1 || count === 1 ? page : page - 1,
           rowsPerPage,
@@ -67,13 +67,6 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
           },
           variant: 'error',
         });
-        if (e.response && e.response.status === 401);
-        {
-          history.push('/libraries');
-          if (user.role !== 'Guest') {
-            logOut(user.setUser);
-          }
-        }
       }
       enqueueSnackbar('Library deleted', {
         anchorOrigin: {
@@ -139,9 +132,8 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
           RowsPerPage: rowsPerPage,
           SearchTerm: searchTerm,
         },
-        test: () => {
-          console.log('hello');
-        },
+        user: user,
+        setUser: user.setUser,
       });
       setItems(response.data.items);
       setCount(response.data.count);
