@@ -23,6 +23,7 @@ import ProtectedComponent from '../../common/ProtectedComponent';
 import { UserContext } from '../../services/authService';
 import GenericModal from './../../common/GenericModal';
 import { useHistory } from 'react-router-dom';
+import CustomPagination from './CustomPagination';
 
 const useStyles = makeStyles(() => ({
   header: {
@@ -68,14 +69,16 @@ const ImageGridList = ({
   page,
   rowsPerPage,
   count,
+  switchValue,
   handlePageChange,
   handleRowsPerPageChange,
   handleRemoveBook,
+  onSwitch,
   isLoading,
 }) => {
   const classes = useStyles();
   const theme = useTheme();
-  const mediumBreakpoint = useMediaQuery(theme.breakpoints.up('md'));
+  const mediumBreakpoint = useMediaQuery(theme.breakpoints.up('lg'));
   const [open, setOpen] = useState(false);
   const [book, setBook] = useState({ library: {} });
   const user = useContext(UserContext);
@@ -167,6 +170,17 @@ const ImageGridList = ({
           page={page}
           onChangePage={handlePageChange}
           onChangeRowsPerPage={handleRowsPerPageChange}
+          test="test"
+          ActionsComponent={() => (
+            <CustomPagination
+              count={count}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onChangePage={handlePageChange}
+              switchValue={switchValue}
+              onSwitch={onSwitch}
+            />
+          )}
         />
       </div>
       <GenericModal
@@ -195,6 +209,8 @@ ImageGridList.propTypes = {
   handleRowsPerPageChange: PropTypes.func,
   isLoading: PropTypes.bool,
   handleRemoveBook: PropTypes.func,
+  switchValue: PropTypes.bool,
+  onSwitch: PropTypes.func,
 };
 
 ImageGridList.defaultProps = {
@@ -206,6 +222,8 @@ ImageGridList.defaultProps = {
   handleRowsPerPageChange: () => {},
   handleRemoveBook: () => {},
   isLoading: false,
+  switchValue: false,
+  onSwitch: () => {},
 };
 
 export default ImageGridList;

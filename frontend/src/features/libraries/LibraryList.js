@@ -139,6 +139,9 @@ const LibraryList = ({ onRowClick, renderButtons }) => {
           RowsPerPage: rowsPerPage,
           SearchTerm: searchTerm,
         },
+        test: () => {
+          console.log('hello');
+        },
       });
       setItems(response.data.items);
       setCount(response.data.count);

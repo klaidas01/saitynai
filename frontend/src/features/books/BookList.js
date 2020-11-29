@@ -32,26 +32,25 @@ const BookList = (props) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [switchValue, setSwtichValue] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const didMount = useRef(false);
   const user = useContext(UserContext);
 
-  const fetchItems = async (page, rowsPerPage, searchTerm) => {
+  const fetchItems = async (page, rowsPerPage, searchTerm, availableOnly) => {
     setIsLoading(true);
+    const path = props.match.params.libraryId
+      ? 'libraries/' + props.match.params.libraryId + '/books'
+      : 'books';
     try {
-      const response = await axiosInstance.get(
-        props.match.params.libraryId
-          ? 'libraries/' + props.match.params.libraryId + '/books'
-          : 'books',
-        {
-          params: {
-            Page: page,
-            RowsPerPage: rowsPerPage,
-            SearchTerm: searchTerm,
-          },
-        }
-      );
+      const response = await axiosInstance.get(availableOnly ? path + '/available' : path, {
+        params: {
+          Page: page,
+          RowsPerPage: rowsPerPage,
+          SearchTerm: searchTerm,
+        },
+      });
       setItems(response.data.items);
       setCount(response.data.count);
       setRowsPerPage(rowsPerPage);
@@ -75,7 +74,8 @@ const BookList = (props) => {
       await fetchItems(
         items.length !== 1 || count === 1 ? page : page - 1,
         rowsPerPage,
-        searchTerm
+        searchTerm,
+        switchValue
       );
     } catch (e) {
       enqueueSnackbar('Something went wrong', {
@@ -96,18 +96,23 @@ const BookList = (props) => {
     setIsLoading(false);
   };
 
+  const handleSwitchChange = async (event, value) => {
+    await fetchItems(page, rowsPerPage, searchTerm, value);
+    setSwtichValue(value);
+  };
+
   const handlePageChange = async (event, newPage) => {
-    await fetchItems(newPage, rowsPerPage, searchTerm);
+    await fetchItems(newPage, rowsPerPage, searchTerm, switchValue);
     setPage(newPage);
   };
 
   const handleRowsPerPageChange = async (event) => {
-    await fetchItems(0, +event.target.value, searchTerm);
+    await fetchItems(0, +event.target.value, searchTerm, switchValue);
   };
 
   useEffect(() => {
     const loadItems = async () => {
-      await fetchItems(page, rowsPerPage, searchTerm);
+      await fetchItems(page, rowsPerPage, searchTerm, switchValue);
     };
     loadItems();
   }, [props.match.params.libraryId]);
@@ -115,7 +120,7 @@ const BookList = (props) => {
   useEffect(() => {
     if (didMount.current) {
       const loadItems = async () => {
-        await fetchItems(0, rowsPerPage, searchTerm);
+        await fetchItems(0, rowsPerPage, searchTerm, switchValue);
       };
       const delayDebounceFn = setTimeout(() => {
         loadItems();
@@ -170,6 +175,8 @@ const BookList = (props) => {
         handleRowsPerPageChange={handleRowsPerPageChange}
         handleRemoveBook={remove}
         isLoading={isLoading}
+        switchValue={switchValue}
+        onSwitch={handleSwitchChange}
       ></ImageGridList>
     </Paper>
   );
