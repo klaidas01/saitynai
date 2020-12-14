@@ -118,7 +118,7 @@ namespace LibraryAPI.Services
                 Description = book.Description,
                 LateFee = book.LateFee,
                 LibraryId = book.LibraryId,
-                IsReserved = book.IsReserved,
+                IsReserved = oldBook.IsReserved,
                 CoverImage = byteStream
             });
             return id;

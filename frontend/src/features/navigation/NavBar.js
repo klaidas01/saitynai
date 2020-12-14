@@ -183,7 +183,7 @@ const NavBar = () => {
           <ProtectedComponent roles={['Administrator', 'Employee', 'User']}>
             <Button
               variant="text"
-              onClick={() => logOut((r) => user.setUser(r))}
+              onClick={() => logOut((usr) => user.setUser(usr))}
               className={classes.navButton}
             >
               Log Out

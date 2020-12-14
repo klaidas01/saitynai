@@ -12,6 +12,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ApartmentIcon from '@material-ui/icons/Apartment';
 import CancelButton from '../../common/CancelButton';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
 const useStyles = makeStyles(() => ({
   header: {
@@ -110,7 +111,7 @@ const BookModal = ({ book, open, handleClose }) => {
                 <ListItem>
                   <ListItemAvatar>
                     <Avatar>
-                      <CreateIcon />
+                      <AttachMoneyIcon />
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText

@@ -56,8 +56,8 @@ jest.mock('../../../common/GenericTable.js', () => {
     // eslint-disable-next-line react/display-name
     default: (props) => (
       <div data-testid="table">
-        {props.columns.map((i) => i.label).toString()},
-        {props.items.map((i) => i.name + ',' + i.address).toString()}
+        {props.columns.map((item) => item.label).toString()},
+        {props.items.map((item) => item.name + ',' + item.address).toString()}
         <button data-testid="nextPageButton" onClick={() => props.handlePageChange({}, 1)} />
         <button
           data-testid="rowsPerPageButton"

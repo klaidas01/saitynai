@@ -13,7 +13,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function StateCell({ row }) {
+const StateCell = ({ row }) => {
   const classes = useStyles();
 
   return (
@@ -27,7 +27,7 @@ function StateCell({ row }) {
       </Typography>
     </Box>
   );
-}
+};
 
 StateCell.propTypes = {
   row: PropTypes.object.isRequired,

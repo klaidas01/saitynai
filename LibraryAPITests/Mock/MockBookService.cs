@@ -51,7 +51,17 @@ namespace LibraryAPITests.Mock
             throw new NotImplementedException();
         }
 
+        public Task<ItemsDTO<Book>> GetLibrarySlice(int page, int rowsPerPage, int libraryId, string searchTerm = "", bool includeReserved = true)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<ItemsDTO<Book>> GetSlice(int page, int rowsPerPage, string searchTerm = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ItemsDTO<Book>> GetSlice(int page, int rowsPerPage, string searchTerm = "", bool includeReserved = true)
         {
             throw new NotImplementedException();
         }

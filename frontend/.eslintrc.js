@@ -10,7 +10,7 @@ module.exports = {
     "plugin:import/errors",
     "plugin:import/warnings",
   ],
-  plugins: ["react", "prettier", "react-hooks"],
+  plugins: ["react", "prettier", "react-hooks", "customrule"],
   rules: {
     "linebreak-style": ["error", "windows"],
     "no-var": "error",
@@ -23,6 +23,7 @@ module.exports = {
     "no-duplicate-imports": "error",
     "no-restricted-imports": "error",
     "no-mixed-requires": "error",
+    "customrule/short-name": "error",
   },
   env: {
     browser: true,

@@ -38,7 +38,7 @@ namespace LibraryAPI.Repositories
                 .Skip((page) * rowsPerPage)
                 .Take(rowsPerPage)
                 .Select(r => (!r.IsReturned && r.ReturnDate < DateTime.Now) 
-                    ? new ReservationResponse { Id = r.Id, StartDate = r.StartDate, ReturnDate = r.ReturnDate, State = "Late", LateFee = Math.Ceiling((DateTime.Now - r.ReturnDate).TotalDays) * r.Book.LateFee, LibraryId = r.Book.LibraryId, LibraryName = r.Book.Library.Name, BookName = r.Book.Title, UserName = r.User.UserName, IsReturned = r.IsReturned } 
+                    ? new ReservationResponse { Id = r.Id, StartDate = r.StartDate, ReturnDate = r.ReturnDate, State = "Late", LateFee = Math.Floor((DateTime.Now - r.ReturnDate).TotalDays) * r.Book.LateFee, LibraryId = r.Book.LibraryId, LibraryName = r.Book.Library.Name, BookName = r.Book.Title, UserName = r.User.UserName, IsReturned = r.IsReturned } 
                     : new ReservationResponse { Id = r.Id, StartDate = r.StartDate, ReturnDate = r.ReturnDate, State = r.IsReturned ? "Returned" : "Ongoing", LateFee = null, LibraryId = r.Book.LibraryId, LibraryName = r.Book.Library.Name, BookName = r.Book.Title, UserName = r.User.UserName, IsReturned = r.IsReturned })
                 .ToListAsync();
 
@@ -47,7 +47,7 @@ namespace LibraryAPI.Repositories
 
         public async Task<ItemsDTO<ReservationResponse>> GetUserReservations(string uid, int page, int rowsPerPage, string searchTerm)
         {
-            var count = _context.Reservations.Count(r => r.Book.Title.ToLower().Contains(searchTerm.ToLower()));
+            var count = _context.Reservations.Count(r => r.Book.Title.ToLower().Contains(searchTerm.ToLower()) && r.UserId == uid);
             var reservations = await _context.Reservations
                 .OrderBy(r => r.IsReturned)
                 .ThenBy(r => r.ReturnDate)
@@ -56,7 +56,7 @@ namespace LibraryAPI.Repositories
                 .Skip((page) * rowsPerPage)
                 .Take(rowsPerPage)
                 .Select(r => (!r.IsReturned && r.ReturnDate < DateTime.Now)
-                    ? new ReservationResponse { Id = r.Id, StartDate = r.StartDate, ReturnDate = r.ReturnDate, State = "Late", LateFee = Math.Ceiling((DateTime.Now - r.ReturnDate).TotalDays) * r.Book.LateFee, LibraryId = r.Book.LibraryId, LibraryName = r.Book.Library.Name, BookName = r.Book.Title, UserName = r.User.UserName, IsReturned = r.IsReturned }
+                    ? new ReservationResponse { Id = r.Id, StartDate = r.StartDate, ReturnDate = r.ReturnDate, State = "Late", LateFee = Math.Floor((DateTime.Now - r.ReturnDate).TotalDays) * r.Book.LateFee, LibraryId = r.Book.LibraryId, LibraryName = r.Book.Library.Name, BookName = r.Book.Title, UserName = r.User.UserName, IsReturned = r.IsReturned }
                     : new ReservationResponse { Id = r.Id, StartDate = r.StartDate, ReturnDate = r.ReturnDate, State = r.IsReturned ? "Returned" : "Ongoing", LateFee = null, LibraryId = r.Book.LibraryId, LibraryName = r.Book.Library.Name, BookName = r.Book.Title, UserName = r.User.UserName, IsReturned = r.IsReturned })
                 .ToListAsync();
 
@@ -83,7 +83,7 @@ namespace LibraryAPI.Repositories
                 .Skip((page) * rowsPerPage)
                 .Take(rowsPerPage)
                 .Select(r => (!r.IsReturned && r.ReturnDate < DateTime.Now)
-                    ? new ReservationResponse { Id = r.Id, StartDate = r.StartDate, ReturnDate = r.ReturnDate, State = "Late", LateFee = Math.Ceiling((DateTime.Now - r.ReturnDate).TotalDays) * r.Book.LateFee, LibraryId = r.Book.LibraryId, LibraryName = r.Book.Library.Name, BookName = r.Book.Title, UserName = r.User.UserName, IsReturned = r.IsReturned }
+                    ? new ReservationResponse { Id = r.Id, StartDate = r.StartDate, ReturnDate = r.ReturnDate, State = "Late", LateFee = Math.Floor((DateTime.Now - r.ReturnDate).TotalDays) * r.Book.LateFee, LibraryId = r.Book.LibraryId, LibraryName = r.Book.Library.Name, BookName = r.Book.Title, UserName = r.User.UserName, IsReturned = r.IsReturned }
                     : new ReservationResponse { Id = r.Id, StartDate = r.StartDate, ReturnDate = r.ReturnDate, State = r.IsReturned ? "Returned" : "Ongoing", LateFee = null, LibraryId = r.Book.LibraryId, LibraryName = r.Book.Library.Name, BookName = r.Book.Title, UserName = r.User.UserName, IsReturned = r.IsReturned })
                 .ToListAsync();
 

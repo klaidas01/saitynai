@@ -16,7 +16,7 @@ const useStyles = makeStyles(() => ({
     flexGrow: '1',
   },
   container: {
-    marginTop: '2%',
+    marginTop: '2vh',
     padding: '1%',
   },
   actions: {
@@ -136,7 +136,7 @@ const BookList = (props) => {
           className={classes.search}
           variant="outlined"
           label="Search"
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(event) => setSearchTerm(event.target.value)}
           InputProps={{
             endAdornment: (
               <InputAdornment>

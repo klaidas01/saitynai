@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import { BrowserRouter } from 'react-router-dom';
 import Layout from './features/navigation/Layout';
 import Routes from './features/navigation/Routes';
@@ -9,6 +10,9 @@ function App() {
     <SnackbarProvider maxSnack={3}>
       <BrowserRouter>
         <Layout>
+          <Helmet>
+            <style>{'body { margin: 0; }'}</style>
+          </Helmet>
           <Routes />
         </Layout>
       </BrowserRouter>

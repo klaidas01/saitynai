@@ -23,23 +23,27 @@ namespace LibraryAPI.Context
             modelBuilder.Entity<Book>()
                 .HasOne(b => b.Library)
                 .WithMany()
-                .HasForeignKey(b => b.LibraryId);
+                .HasForeignKey(b => b.LibraryId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Reservation>()
                 .HasKey(r => r.Id);
             modelBuilder.Entity<Reservation>()
                 .HasOne(r => r.Book)
                 .WithMany()
-                .HasForeignKey(r => r.BookId);
+                .HasForeignKey(r => r.BookId)
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Reservation>()
                 .HasOne(r => r.User)
                 .WithMany()
-                .HasForeignKey(r => r.UserId);
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ApplicationUser>()
                 .HasOne(u => u.Library)
                 .WithMany()
                 .HasForeignKey(u => u.LibraryId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
         }
 

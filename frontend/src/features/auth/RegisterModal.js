@@ -97,6 +97,7 @@ const RegisterModal = ({ onSubmit }) => {
             validationSchema={registerSchema}
             onSubmit={(values) => {
               onSubmit(values);
+              handleClose();
             }}
           >
             {(formikProps) => (
@@ -170,7 +171,6 @@ const RegisterModal = ({ onSubmit }) => {
                     <ConfirmButton
                       onClick={(values) => {
                         formikProps.handleSubmit(values);
-                        handleClose();
                       }}
                       text="Submit"
                     />

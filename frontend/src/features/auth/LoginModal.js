@@ -94,8 +94,8 @@ const LoginModal = ({ onSubmit }) => {
           >
             {(formikProps) => (
               <div
-                onKeyUp={(e) => {
-                  if (e.key === 'Enter') formikProps.handleSubmit(formikProps.values);
+                onKeyUp={(event) => {
+                  if (event.key === 'Enter') formikProps.handleSubmit(formikProps.values);
                 }}
               >
                 <TextField

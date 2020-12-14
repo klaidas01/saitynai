@@ -32,14 +32,14 @@ const bookSchema = yup.object({
   description: yup
     .string()
     .required('Book description is required.')
-    .max(500, 'Book description is too long! (max 500 characters)'),
+    .max(1000, 'Book description is too long! (max 1000 characters)'),
   lateFee: yup.number().required('Late fee is required.').typeError('Late fee must be a number.'),
   libraryId: yup.number().required('Library is required.'),
 });
 
 const useStyles = makeStyles(() => ({
   container: {
-    marginTop: '2%',
+    marginTop: '2vh',
     paddingBottom: '2%',
     borderRadius: '16px',
   },
@@ -187,7 +187,7 @@ const BookForm = ({
                 decimalCharacter="."
                 outputFormat="string"
                 textAlign="left"
-                onChange={(e, value) => formikProps.setFieldValue('lateFee', value)}
+                onChange={(event, value) => formikProps.setFieldValue('lateFee', value)}
                 minimumValue="0"
                 fullWidth
               />
