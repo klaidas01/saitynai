@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +7,6 @@ using LibraryAPI.Models;
 using LibraryAPI.Services.Interfaces;
 using LibraryAPI.DTO;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 
 namespace LibraryAPI.Controllers
 {

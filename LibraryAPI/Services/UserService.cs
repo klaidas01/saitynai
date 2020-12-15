@@ -5,7 +5,6 @@ using LibraryAPI.Repositories.Interfaces;
 using LibraryAPI.Services.Interfaces;
 using LibraryAPI.Settings;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Server.IIS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
