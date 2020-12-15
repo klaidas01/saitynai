@@ -62,6 +62,9 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     textAlign: 'center',
   },
+  controls: {
+    whiteSpace: 'nowrap',
+  },
 }));
 
 const ImageGridList = ({
@@ -120,7 +123,7 @@ const ImageGridList = ({
                   <GridListTileBar
                     titlePosition="top"
                     actionIcon={
-                      <>
+                      <div className={classes.controls}>
                         <IconButton
                           className={classes.button}
                           onClick={() => {
@@ -138,7 +141,7 @@ const ImageGridList = ({
                         >
                           <DeleteIcon />
                         </IconButton>
-                      </>
+                      </div>
                     }
                   />
                 </ProtectedComponent>
