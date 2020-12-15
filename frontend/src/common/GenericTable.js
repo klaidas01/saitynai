@@ -18,19 +18,8 @@ const useStyles = makeStyles(() => ({
     fontSize: 14,
     fontWeight: 'bold',
   },
-  headerFirst: {
-    backgroundColor: '#9bceff',
-    color: 'white',
-    fontSize: 14,
-    fontWeight: 'bold',
-    borderRadius: '16px 0px 0px 0px',
-  },
-  headerLast: {
-    backgroundColor: '#9bceff',
-    color: 'white',
-    fontSize: 14,
-    fontWeight: 'bold',
-    borderRadius: '0px 16px 0px 0px',
+  container: {
+    overflow: 'hidden',
   },
   center: {
     marginLeft: '50%',
@@ -67,18 +56,12 @@ const GenericTable = ({
         <Table>
           <TableHead data-testid="table">
             <TableRow>
-              {columns.map((column, index) => (
+              {columns.map((column) => (
                 <TableCell
                   key={column.id}
                   align={column.align}
                   style={{ minWidth: column.minWidth, width: column.maxWidth }}
-                  className={
-                    index === 0
-                      ? classes.headerFirst
-                      : index === columns.length - 1
-                      ? classes.headerLast
-                      : classes.header
-                  }
+                  className={classes.header}
                 >
                   {column.label}
                 </TableCell>
